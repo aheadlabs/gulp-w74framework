@@ -1,0 +1,25 @@
+{
+  "name": "@aheadlabs/gulp-w74framework",
+  "version": "0.1.0-alpha1",
+  "description": "Gulp support for the W74 WordPress framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aheadlabs/gulp-w74framework.git"
+  },
+  "keywords": [
+    "gulp",
+    "gulpplugin",
+    "w74framework",
+    "wordpress"
+  ],
+  "author": "@aheadlabs",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/aheadlabs/gulp-w74framework/issues"
+  },
+  "homepage": "https://github.com/aheadlabs/gulp-w74framework#readme"
+}
