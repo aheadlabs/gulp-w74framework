@@ -32,7 +32,7 @@ jobs:
           command: 'install'
           customEndpoint: 'registry.npmjs.org'
       - task: Npm@1
-        displayName: Who am I?
+        displayName: Publish package to npm registry
         inputs:
           command: 'publish'
           publishEndpoint: 'registry.npmjs.org'
