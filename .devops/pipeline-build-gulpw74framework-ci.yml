@@ -22,15 +22,11 @@ jobs:
   - job: Main
     displayName: Main job
     steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '12.x'
+          checkLatest: true
       - task: CmdLine@2
         displayName: Install dependencies
         inputs:
           script: npm install
-      - task: CmdLine@2
-        displayName: Login to npm
-        inputs:
-          script: |
-            npm adduser --scope=@aheadlabs
-            ${NPM_USER}
-            ${NPM_PASSWORD}
-            ${NPM_EMAIL}
