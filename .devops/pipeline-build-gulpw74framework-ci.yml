@@ -1,0 +1,36 @@
+# Pipeline /.devops/pipeline-build-gulpw74framework-ci.yml
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+      - dev
+      - feature/*
+      - hotfix/*
+      - release/*
+pr:
+  branches:
+    include:
+      - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+name: CI-$(date:yyyyMMdd)$(rev:.r)
+jobs:
+  - job: Main
+    displayName: Main job
+    steps:
+      - task: CmdLine@2
+        displayName: Install dependencies
+        inputs:
+          script: npm install
+      - task: CmdLine@2
+        displayName: Login to npm
+        inputs:
+          script: |
+            npm adduser --scope=@aheadlabs
+            ${NPM_USER}
+            ${NPM_PASSWORD}
+            ${NPM_EMAIL}
