@@ -34,6 +34,5 @@ jobs:
       - task: Npm@1
         displayName: Who am I?
         inputs:
-          command: 'custom'
-          customCommand: 'whoami'
-          customEndpoint: 'registry.npmjs.org'
+          command: 'publish'
+          publishEndpoint: 'registry.npmjs.org'
