@@ -29,4 +29,10 @@ jobs:
       - task: CmdLine@2
         displayName: Install dependencies
         inputs:
-          script: npm install
+          script: |
+            node -v
+            npm install
+      - task: CmdLine@2
+        displayName: Publish package to npm registry
+        inputs:
+          script: npm whoami
