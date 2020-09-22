@@ -1,5 +1,7 @@
 # gulp-w74framework
-This package provides Gulp support for the W74 WordPress framework.
+This package provides Gulp support for the W74 WordPress framework.  
+Everything than can be automated, must be automated!<br><br>
+![Logo](.media/isologo-gulp-w74framework-400px.png)
 
 ## What is W74 framework?
 It is a WordPress framework (parent theme) that lets you develop child themes based on it, taking advantage of its great features:
