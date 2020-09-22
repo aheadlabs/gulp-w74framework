@@ -1,0 +1,9 @@
+{
+    "debug": {
+        "label": "gulp-w74framework",
+        "level": "debug"
+    },
+    "paths": {
+        "wordpress_themes": "wp-content/themes/"
+    }
+}

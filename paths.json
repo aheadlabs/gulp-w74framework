@@ -1,0 +1,25 @@
+{
+    "theme_slug": null,
+    "defaults": {
+        "assets": "assets/",
+        "css": "css/",
+        "images": "images/",
+        "js": "js/"
+    },
+    "source_paths": {
+        "node_modules": "node_modules/",
+        "src": "src/",
+        "assets": null,
+        "css": null,
+        "images": null,
+        "js": null
+    },
+    "output_paths": {
+        "wordpress": null,
+        "theme": null,
+        "assets": null,
+        "css": null,
+        "images": null,
+        "js": null
+    }
+}
