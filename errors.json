@@ -1,4 +1,5 @@
 {
-    "wordpress_path_not_valid": "WordPress path is not valid",
-    "theme_slug_not_valid": "Theme slug is not valid"
+    "path_not_set": "You must set the path first",
+    "theme_slug_not_valid": "Theme slug is not valid",
+    "wordpress_path_not_valid": "WordPress path is not valid"
 }
