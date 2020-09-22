@@ -5,10 +5,6 @@ trigger:
   branches:
     include:
       - master
-      - dev
-      - feature/*
-      - hotfix/*
-      - release/*
 pr:
   branches:
     include:
