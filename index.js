@@ -12,8 +12,11 @@ exports.build = () => {
     const version = core.getVersion()
 
     logger.info(`Building your ${paths.theme_slug} v${version} WordPress theme!`);
+    
+    processorPhp.paths(paths);
+
     return gulp.series(
-        processorPhp.go(paths)
+        processorPhp.go
     );
 }
 
