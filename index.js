@@ -1,5 +1,6 @@
 const
 core = require('./core'),
+gulp = require('gulp'),
 { logger } = require('./logger'),
 processorPhp = require('./processor-php')
 ;
@@ -11,7 +12,9 @@ exports.build = () => {
     const version = core.getVersion()
 
     logger.info(`Building your ${paths.theme_slug} v${version} WordPress theme!`);
-    processorPhp.go(paths);
+    return gulp.series(
+        processorPhp.go(paths)
+    );
 }
 
 exports.watch = () => {

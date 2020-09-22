@@ -16,7 +16,7 @@ exports.go = (paths) => {
     ;
 
     logger.info(`Moving files from ${source} to ${destination}`);
-    // return gulp.src(source)
-    //     .pipe(newer(destination))
-    //     .pipe(gulp.dest(destination));
+    return gulp.src(source)
+        .pipe(newer(destination))
+        .pipe(gulp.dest(destination));
 }

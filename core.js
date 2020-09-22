@@ -2,7 +2,6 @@ const
 browserSync = false,
 config = require('./config.json'),
 errors = require('./errors.json'),
-gulp = require('gulp'),
 { logger } = require('./logger'),
 paths = require('./paths.json'),
 slash = require('slash'),
