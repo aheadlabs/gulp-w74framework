@@ -3,9 +3,10 @@ del = require('del'),
 errors = require('./errors.json'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
-newer = require('gulp-newer'),
-_paths = null
+newer = require('gulp-newer')
 ;
+
+let _paths = null;
 
 exports.paths = (paths) => _paths = paths;
 
