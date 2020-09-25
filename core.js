@@ -3,7 +3,7 @@ browserSync = false,
 config = require('./config.json'),
 errors = require('./errors.json'),
 { logger } = require('./logger'),
-paths = require('./paths.json'),
+_paths = require('./paths.json'),
 slash = require('slash'),
 tools = require('./tools'),
 wp_cli = require('./wp-cli')
@@ -11,7 +11,7 @@ wp_cli = require('./wp-cli')
 
 exports.getVersion = function(wordPressPath) {
     const 
-    template = wp_cli.getOption('w74_version', paths.output_paths.wordpress),
+    template = wp_cli.getOption('w74_version', _paths.output_paths.wordpress),
     now = new Date(),
     timestamp = now.getFullYear() 
         + tools.addLeadingZeros(now.getMonth()) 
@@ -23,74 +23,69 @@ exports.getVersion = function(wordPressPath) {
 }
 
 exports.parseArguments = () => {
-    // Try to find wp-path and wp-theme arguments
-    for (let index = 2; index < process.argv.length; index++) {
-        const argument = process.argv[index];
+    // Filter arguments to the ones beginning by -
+    const commandLineArguments = process.argv.filter(argument => argument.startsWith("-"));
 
-        // wp-path
-        if(argument.startsWith('--wp-path=')) {
-            let parts = argument.split('=');
-            if (parts.length == 2) {
-                paths.output_paths.wordpress = tools.fixPath(slash(`${parts[1]}/`));
-                logger.debug(`WordPress path is: ${paths.output_paths.wordpress}`);
-            }
-        }
+    // Process each argument
+    const searchExpression = /-{0,2}([\w-]+)="*(.+[^"])/;
+    commandLineArguments.forEach(argument => {
+        const argumentData = argument.match(searchExpression);
+        if(argumentData.length != 3) throw `${errors.parameter_syntax_not_valid} : ${argument}`;
+        _paths.parameters[argumentData[1].replace('-', '_')] = tools.fixDirectoryPath(argumentData[2]);
+    });
 
-        // wp-theme
-        if(argument.startsWith('--wp-theme=')) {
-            let parts = argument.split('=');
-            if (parts.length == 2) {
-                paths.theme_slug = tools.fixPath(slash(parts[1]));
-                logger.debug(`Theme slug is: ${paths.theme_slug}`);
-            }
-        }
-    }
-
-    if(!paths.output_paths.wordpress) {
-        logger.error(errors.wordpress_path_not_valid);
-        throw errors.wordpress_path_not_valid;
-    }
-    if(!paths.theme_slug) {
-        logger.error(errors.theme_slug_not_valid);
-        throw errors.theme_slug_not_valid;
-    }
+    return _paths;
 }
+exports.setPaths = function(paths) {
+    /**
+     * Slug
+     */
+    paths.parameters.theme_slug = tools.fixSlug(paths.parameters.theme_slug);
 
-exports.setPaths = function(data) {
+    
     /**
      * Source
      */
 
+    // Src path
+    paths.source_paths.src = tools.fixDirectoryPath(`${paths.parameters.theme_path}/${paths.defaults.src}`);
+
+    // Node modules path
+    paths.source_paths.node_modules = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.node_modules}/`);
+
     // Assets path
-    paths.source_paths.assets = tools.fixPath(`${paths.source_paths.src}/${paths.defaults.assets}/`);
+    paths.source_paths.assets = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/`);
     
     // CSS path
-    paths.source_paths.css = tools.fixPath(`${paths.source_paths.src}/${paths.defaults.css}/`);
+    paths.source_paths.css = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.css}/`);
     
     // Images path
-    paths.source_paths.images = tools.fixPath(`${paths.source_paths.src}/${paths.defaults.images}/`);
+    paths.source_paths.images = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.images}/`);
     
     // JS path
-    paths.source_paths.js = tools.fixPath(`${paths.source_paths.src}/${paths.defaults.js}/`);
+    paths.source_paths.js = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.js}/`);
 
     /**
      * Output
      */
+
+    // WordPress path
+    paths.output_paths.wordpress = tools.fixDirectoryPath(paths.parameters.wordpress_path);
     
     // Theme path
-    paths.output_paths.theme = tools.fixPath(`${paths.output_paths.wordpress}/${config.paths.wordpress_themes}/${paths.theme_slug}/`);
+    paths.output_paths.theme = tools.fixDirectoryPath(`${paths.output_paths.wordpress}/${config.paths.wordpress_themes}/${paths.parameters.theme_slug}/`);
 
     // Assets path
-    paths.output_paths.assets = tools.fixPath(`${paths.output_paths.theme}/${paths.defaults.assets}/`);
+    paths.output_paths.assets = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.assets}/`);
 
     // CSS path
-    paths.output_paths.css = tools.fixPath(`${paths.output_paths.theme}/${paths.defaults.css}/`);
+    paths.output_paths.css = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.css}/`);
 
     // Images path
-    paths.output_paths.images = tools.fixPath(`${paths.output_paths.theme}/${paths.defaults.images}/`);
+    paths.output_paths.images = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.images}/`);
 
     // JS path
-    paths.output_paths.js = tools.fixPath(`${paths.output_paths.theme}/${paths.defaults.js}/`);
+    paths.output_paths.js = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.js}/`);
 
 
     return paths;

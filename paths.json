@@ -1,14 +1,20 @@
 {
-    "theme_slug": null,
+    "parameters": {
+        "theme_slug": null,
+        "theme_path": null,
+        "wordpress_path": null        
+    },
     "defaults": {
-        "assets": "assets/",
-        "css": "css/",
-        "images": "images/",
-        "js": "js/"
+        "node_modules": "node_modules",
+        "assets": "assets",
+        "css": "css",
+        "images": "images",
+        "js": "js",
+        "src": "src"
     },
     "source_paths": {
-        "node_modules": "node_modules/",
-        "src": "src/",
+        "node_modules": null,
+        "src": null,
         "assets": null,
         "css": null,
         "images": null,

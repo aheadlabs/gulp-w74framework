@@ -4,6 +4,6 @@
         "level": "debug"
     },
     "paths": {
-        "wordpress_themes": "wp-content/themes/"
+        "wordpress_themes": "wp-content/themes"
     }
 }

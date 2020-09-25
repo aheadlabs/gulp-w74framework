@@ -1,27 +1,29 @@
 const
+core = require('./core'),
 del = require('del'),
 errors = require('./errors.json'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
-newer = require('gulp-newer')
+newer = require('gulp-newer'),
+version = null
 ;
 
-let _paths = null;
-
-exports.paths = (paths) => _paths = paths;
+logger.info('Warming up PHP processor...');
+let _paths = core.parseArguments();
+_paths = core.setPaths(_paths);
 
 exports.delete = (paths) => {
     return del(`${paths.output_paths.theme}**/*.php`, {force: true});
 }
 
-exports.go = () => {    
+exports.go = () => {
+    if(!_paths) throw errors.path_not_set;
+
     const
     source = `${_paths.source_paths.src}**/*.php`,
     destination = _paths.output_paths.theme
     ;
-
-    if(!_paths) throw errors.path_not_set;
-
+    
     logger.info(`Moving files from ${source} to ${destination}`);
     return gulp.src(source)
         .pipe(newer(destination))

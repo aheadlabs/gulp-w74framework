@@ -1,3 +1,4 @@
+const { series } = require('gulp');
 const
 core = require('./core'),
 gulp = require('gulp'),
@@ -5,20 +6,18 @@ gulp = require('gulp'),
 processorPhp = require('./processor-php')
 ;
 
-exports.build = () => {
+/*
     logger.info('Getting everything ready...')
     core.parseArguments();
     const paths = core.setPaths();
     const version = core.getVersion()
 
     logger.info(`Building your ${paths.theme_slug} v${version} WordPress theme!`);
-    
-    processorPhp.paths(paths);
+*/
 
-    return gulp.series(
-        processorPhp.go
-    );
-}
+exports.build = gulp.series(
+    processorPhp.go
+);
 
 exports.watch = () => {
     logger.info('Building and watching your WordPress theme!');
