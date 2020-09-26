@@ -3,7 +3,7 @@ const
 core = require('./core'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
-processorPhp = require('./processor-php')
+processorPhp = require('./processor-php').default
 ;
 
 /*
@@ -16,7 +16,7 @@ processorPhp = require('./processor-php')
 */
 
 exports.build = gulp.series(
-    processorPhp.go
+    processorPhp
 );
 
 exports.watch = () => {

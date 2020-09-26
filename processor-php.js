@@ -1,6 +1,6 @@
 const
 core = require('./core'),
-del = require('del'),
+del = require('del').sync,
 errors = require('./errors.json'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
@@ -11,14 +11,21 @@ version = null
 logger.info('Warming up PHP processor...');
 let _paths = core.parseArguments();
 _paths = core.setPaths(_paths);
+if(!_paths) throw errors.path_not_set;
 
-exports.delete = (paths) => {
-    return del(`${paths.output_paths.theme}**/*.php`, {force: true});
+exports.default = () => {
+    this.delete();
+    this.go();
+};
+
+exports.delete = () => {
+    const path = `${_paths.output_paths.theme}**/*.php`;
+
+    logger.info(`Deleting files from ${path}`);
+    return del(path, {force: true});
 }
 
 exports.go = () => {
-    if(!_paths) throw errors.path_not_set;
-
     const
     source = `${_paths.source_paths.src}**/*.php`,
     destination = _paths.output_paths.theme
