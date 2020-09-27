@@ -3,20 +3,17 @@ const
 core = require('./core'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
+processorImages = require('./processor-images').default,
 processorPhp = require('./processor-php').default
 ;
 
 /*
-    logger.info('Getting everything ready...')
-    core.parseArguments();
-    const paths = core.setPaths();
     const version = core.getVersion()
-
-    logger.info(`Building your ${paths.theme_slug} v${version} WordPress theme!`);
 */
 
 exports.build = gulp.series(
-    processorPhp
+    processorPhp,
+    processorImages
 );
 
 exports.watch = () => {

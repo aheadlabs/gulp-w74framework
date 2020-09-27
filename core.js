@@ -47,23 +47,26 @@ exports.setPaths = function(paths) {
      * Source
      */
 
+    // Root path
+    paths.source_paths.root = tools.fixDirectoryPath(`${paths.parameters.theme_path}`);
+
     // Src path
-    paths.source_paths.src = tools.fixDirectoryPath(`${paths.parameters.theme_path}/${paths.defaults.src}`);
+    paths.source_paths.src = tools.fixDirectoryPath(`${paths.source_paths.root}/${paths.defaults.src}`);
 
     // Node modules path
-    paths.source_paths.node_modules = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.node_modules}/`);
+    paths.source_paths.node_modules = tools.fixDirectoryPath(`${paths.source_paths.root}/${paths.defaults.node_modules}/`);
 
     // Assets path
     paths.source_paths.assets = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/`);
     
     // CSS path
-    paths.source_paths.css = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.css}/`);
+    paths.source_paths.css = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.css}/`);
     
     // Images path
-    paths.source_paths.images = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.images}/`);
+    paths.source_paths.images = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.images}/`);
     
     // JS path
-    paths.source_paths.js = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.js}/`);
+    paths.source_paths.js = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.js}/`);
 
     /**
      * Output
@@ -79,13 +82,13 @@ exports.setPaths = function(paths) {
     paths.output_paths.assets = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.assets}/`);
 
     // CSS path
-    paths.output_paths.css = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.css}/`);
+    paths.output_paths.css = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.assets}/${paths.defaults.css}/`);
 
     // Images path
-    paths.output_paths.images = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.images}/`);
+    paths.output_paths.images = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.assets}/${paths.defaults.images}/`);
 
     // JS path
-    paths.output_paths.js = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.js}/`);
+    paths.output_paths.js = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.assets}/${paths.defaults.js}/`);
 
 
     return paths;
