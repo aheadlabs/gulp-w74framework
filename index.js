@@ -1,10 +1,10 @@
-const { series } = require('gulp');
 const
 core = require('./core'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
 processorImages = require('./processor-images').default,
-processorPhp = require('./processor-php').default
+processorPhp = require('./processor-php').default,
+processorStyles = require('./processor-styles').default
 ;
 
 /*
@@ -13,7 +13,8 @@ processorPhp = require('./processor-php').default
 
 exports.build = gulp.series(
     processorPhp,
-    processorImages
+    processorImages,
+    processorStyles
 );
 
 exports.watch = () => {
@@ -21,3 +22,4 @@ exports.watch = () => {
 }
 
 // TODO Create gulp file demo (gulpfile-demo.js) on GitHub and update gulp-w74framework documentation
+// TODO We are not deleting files from destination that are not in the Vinyl source, so newer() is useless.
