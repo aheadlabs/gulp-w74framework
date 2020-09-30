@@ -1,10 +1,10 @@
 const
-core = require('./core'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
 processorImages = require('./processor-images').default,
 processorPhp = require('./processor-php').default,
-processorStyles = require('./processor-styles').default
+processorStyles = require('./processor-styles').default,
+processorJavaScript = require('./processor-javascript').default
 ;
 
 /*
@@ -14,7 +14,8 @@ processorStyles = require('./processor-styles').default
 exports.build = gulp.series(
     processorPhp,
     processorImages,
-    processorStyles
+    processorStyles,
+    processorJavaScript
 );
 
 exports.watch = () => {

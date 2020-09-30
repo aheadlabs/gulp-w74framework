@@ -19,12 +19,12 @@ exports.default = (done) => {
 };
 
 exports.delete = (path) => {
-    logger.info(`Deleting files from ${path}`);
+    logger.info(`Deleting PHP files from ${path}`);
     return del(path, {force: true});
 }
 
 exports.copy = (source, destination) => {    
-    logger.info(`Moving files from ${source} to ${destination}`);
+    logger.info(`Moving PHP files from ${source} to ${destination}`);
     return gulp.src(source)
         .pipe(newer(destination))
         .pipe(gulp.dest(destination));
