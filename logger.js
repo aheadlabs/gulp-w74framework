@@ -7,7 +7,7 @@ exports.logger = winston.createLogger({
     level: config.debug.level,
     format: winston.format.combine(
         winston.format.timestamp({
-          format: 'YYYY-MM-DD HH:mm:ss'
+          format: 'YYYY-MM-DD HH:mm:ss.SSSSS'
         }),
         winston.format.label({label: config.debug.label}),
         winston.format.errors({ stack: true }),
