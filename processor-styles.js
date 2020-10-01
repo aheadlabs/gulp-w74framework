@@ -29,11 +29,9 @@ exports.default = (done) => {
     this.delete(`${_paths.output_paths.theme}*.css`);
 
     // Transpile SCSS files
-    this.transpileScss(`${_paths.source_paths.css}*.scss`, `${_paths.source_paths.css}`, version);
+    this.transpileScss(`${_paths.source_paths.css}*.scss`, `${_paths.output_paths.theme}`, version);
     logger.debug('Bootstrap SCSS files are @include-d in the styles.scss file from the node_modules sources.');
-
-    // Copy CSS files
-    this.copy(`${_paths.source_paths.css}*.css`, `${_paths.output_paths.theme}`);
+    logger.debug('Finished transpilation of styles');
 
     done();
 };
@@ -43,14 +41,6 @@ exports.delete = (path) => {
     return del(path, {force: true});
 }
 
-exports.copy = (source, destination) => {    
-    logger.info(`Processing and moving styles from ${source} to ${destination}`);
-    return gulp.src(source)
-        .pipe(postcss(cssProcessors))
-        .pipe(newer(destination))
-        .pipe(gulp.dest(destination));
-}
-
 exports.transpileScss = (source, destination, version) => {
     logger.info(`Transpiling SCSS files from ${source} to ${destination}`);
     return gulp.src(source)
@@ -58,5 +48,7 @@ exports.transpileScss = (source, destination, version) => {
             outputStyle: 'compressed'
         }))
         .pipe(replace('{{version}}', `${version}`))
+        .pipe(postcss(cssProcessors))
+        .pipe(newer(destination))
         .pipe(gulp.dest(destination));
 }

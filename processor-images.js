@@ -26,7 +26,7 @@ exports.default = (done) => {
 };
 
 exports.delete = (path) => {
-    logger.info(`Deleting files from ${path}`);
+    logger.info(`Deleting image files from ${path}`);
     return del(path, {force: true});
 }
 
