@@ -26,4 +26,9 @@ It supports working with your own theme repository. You don't need to develop yo
 ## How to use
 In your child theme, just:
 - [add gulp as a dev dependency](https://gulpjs.com/docs/en/getting-started/quick-start#install-the-gulp-package-in-your-devdependencies)
-- Require this package in your gulpfile.js file and feel the magic. Demo [here](gulpfile-demo.js).
+- Require this package in your gulpfile.js file. Demo [here](gulpfile-demo.js).
+- Call the ``build`` or ``watch`` tasks passing the following parameters in strict order:
+```
+gulp build --theme-slug="<theme slug>" --wordpress-path="<directory path>"
+gulp watch --theme-slug="<theme slug>" --dev-proxy="<local web server>" --wordpress-path="<directory path>"
+```
