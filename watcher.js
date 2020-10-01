@@ -6,7 +6,8 @@ gulp = require('gulp'),
 { logger } = require('./logger'),
 processorImages = require('./processor-images').default,
 processorPhp = require('./processor-php').default,
-processorStyles = require('./processor-styles').default
+processorStyles = require('./processor-styles').default,
+tools = require('./tools')
 ;
 
 let browsersync = false;
@@ -32,7 +33,7 @@ exports.default = (done) => {
                 scroll: true
             },
             injectChanges: false,
-            proxy: 'localhost/aheadlabs.com',  // TODO Manage this URL dynamically
+            proxy: _paths.parameters.dev_proxy,
             ui: {
                 port: 8000
             }

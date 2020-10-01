@@ -9,7 +9,7 @@ tools = require('./tools'),
 wp_cli = require('./wp-cli')
 ;
 
-exports.getVersion = function(wordPressPath) {
+exports.getVersion = function() {
     const 
     template = wp_cli.getOption('w74_version', _paths.output_paths.wordpress),
     now = new Date(),
@@ -31,7 +31,10 @@ exports.parseArguments = () => {
     commandLineArguments.forEach(argument => {
         const argumentData = argument.match(searchExpression);
         if(argumentData.length != 3) throw `${errors.parameter_syntax_not_valid} : ${argument}`;
-        _paths.parameters[argumentData[1].replace('-', '_')] = tools.fixDirectoryPath(argumentData[2]);
+        let _name = argumentData[1].replace('-', '_');
+        let _value = tools.fixDirectoryPath(argumentData[2]);
+        _paths.parameters[_name] = _value;
+        logger.debug(`Parsed parameter with name \"${_name}\" and value \"${_value}\"`);
     });
 
     return _paths;

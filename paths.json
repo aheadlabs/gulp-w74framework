@@ -2,7 +2,8 @@
     "parameters": {
         "theme_slug": null,
         "theme_path": null,
-        "wordpress_path": null        
+        "wordpress_path": null,
+        "dev_proxy": null
     },
     "defaults": {
         "node_modules": "node_modules",
