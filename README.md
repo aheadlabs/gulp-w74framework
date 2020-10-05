@@ -1,5 +1,5 @@
 # gulp-w74framework
-This package provides Gulp support for the W74 WordPress framework.  
+This package provides Gulp support for the W74 WordPress framework. It is [listed in the npm package directory](https://www.npmjs.com/package/@aheadlabs/gulp-w74framework).  
 Everything than can be automated, must be automated!<br><br>
 ![Logo](.media/isologo-gulp-w74framework-400px.png)
 
