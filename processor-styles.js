@@ -22,7 +22,7 @@ const cssProcessors = [
 
 exports.default = (done) => {
     // Get theme version
-    const version = core.getVersion(_paths.output_paths.wordpress);
+    const version = core.getVersionFromPackage(_paths.parameters.theme_path);
     logger.debug(`Theme version is ${version}`);
 
     // Delete output files

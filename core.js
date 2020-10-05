@@ -1,26 +1,30 @@
 const
-browserSync = false,
 config = require('./config.json'),
 errors = require('./errors.json'),
 { logger } = require('./logger'),
 _paths = require('./paths.json'),
-slash = require('slash'),
 tools = require('./tools'),
+util = require('util'),
 wp_cli = require('./wp-cli')
 ;
 
-exports.getVersion = function() {
-    const 
-    template = wp_cli.getOption('w74_version', _paths.output_paths.wordpress),
-    now = new Date(),
-    timestamp = now.getFullYear() 
-        + tools.addLeadingZeros(now.getMonth()) 
-        + tools.addLeadingZeros(now.getDate()) 
-        + tools.addLeadingZeros(now.getHours()) 
-        + tools.addLeadingZeros(now.getMinutes()) 
-        + tools.addLeadingZeros(now.getSeconds());
-    return template.replace('{timestamp}', timestamp);
+exports.getVersionFromPackage = function(packagePath) {
+    const packageJson = require(`${packagePath}package.json`);
+    return packageJson.version;
 }
+
+exports.getVersion = util.deprecate(() => {
+    const
+        template = wp_cli.getOption('w74_version', _paths.output_paths.wordpress),
+        now = new Date(),
+        timestamp = now.getFullYear()
+            + tools.addLeadingZeros(now.getMonth())
+            + tools.addLeadingZeros(now.getDate())
+            + tools.addLeadingZeros(now.getHours())
+            + tools.addLeadingZeros(now.getMinutes())
+            + tools.addLeadingZeros(now.getSeconds());
+    return template.replace('{timestamp}', timestamp);
+}, 'This function is deprecated since the single source of truth for the version number should be the one specified in the package.json file and not in the database');
 
 exports.parseArguments = () => {
     // Filter arguments to the ones beginning by -
@@ -30,7 +34,7 @@ exports.parseArguments = () => {
     const searchExpression = /-{0,2}([\w-]+)="*(.+[^"])/;
     commandLineArguments.forEach(argument => {
         const argumentData = argument.match(searchExpression);
-        if(argumentData.length != 3) throw `${errors.parameter_syntax_not_valid} : ${argument}`;
+        if(argumentData.length !== 3) throw `${errors.parameter_syntax_not_valid} : ${argument}`;
         let _name = argumentData[1].replace('-', '_');
         let _value = tools.fixDirectoryPath(argumentData[2]);
         _paths.parameters[_name] = _value;
