@@ -32,3 +32,16 @@ In your child theme, just:
 gulp build --theme-slug="<theme slug>" --wordpress-path="<directory path>"
 gulp watch --theme-slug="<theme slug>" --dev-proxy="<local web server>" --wordpress-path="<directory path>"
 ```
+
+You can also install the package from the npm package directory and set it up your way using the following command:
+```
+npm install @aheadlabs/gulp-w74framework
+```
+In addition, you can add it as a dependency
+```
+npm install @aheadlabs/gulp-w74framework --save
+```
+or as a dev dependency
+```
+npm install @aheadlabs/gulp-w74framework --save-dev
+```
