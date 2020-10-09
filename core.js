@@ -94,6 +94,6 @@ exports.setPaths = function(paths) {
     // JS path
     paths.output_paths.js = tools.fixDirectoryPath(`${paths.output_paths.dist}/${paths.defaults.assets}/${paths.defaults.js}/`);
 
-
+    logger.debug(paths);
     return paths;
 }

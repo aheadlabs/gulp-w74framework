@@ -11,7 +11,6 @@ logger.info('Warming up PHP processor...');
 let _paths = core.parseArguments();
 _paths = core.setPaths(_paths);
 if(!_paths) throw errors.path_not_set;
-else logger.info(_paths);
 
 exports.default = (done) => {
     this.delete(`${_paths.output_paths.theme}**/*.php`);
