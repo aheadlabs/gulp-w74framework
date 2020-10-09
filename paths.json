@@ -2,7 +2,7 @@
     "parameters": {
         "theme_slug": null,
         "theme_path": null,
-        "wordpress_path": null,
+        "dist": null,
         "dev_proxy": null
     },
     "defaults": {
@@ -23,8 +23,7 @@
         "js": null
     },
     "output_paths": {
-        "wordpress": null,
-        "theme": null,
+        "dist": null,
         "assets": null,
         "css": null,
         "images": null,

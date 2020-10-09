@@ -79,23 +79,20 @@ exports.setPaths = function(paths) {
      * Output
      */
 
-    // WordPress path
-    paths.output_paths.wordpress = tools.fixDirectoryPath(paths.parameters.wordpress_path);
-    
-    // Theme path
-    paths.output_paths.theme = tools.fixDirectoryPath(`${paths.output_paths.wordpress}/${config.paths.wordpress_themes}/${paths.parameters.theme_slug}/`);
+    // Dist path
+    paths.output_paths.dist = tools.fixDirectoryPath(paths.parameters.dist);
 
     // Assets path
-    paths.output_paths.assets = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.assets}/`);
+    paths.output_paths.assets = tools.fixDirectoryPath(`${paths.output_paths.dist}/${paths.defaults.assets}/`);
 
     // CSS path
-    paths.output_paths.css = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.assets}/${paths.defaults.css}/`);
+    paths.output_paths.css = tools.fixDirectoryPath(`${paths.output_paths.dist}/${paths.defaults.assets}/${paths.defaults.css}/`);
 
     // Images path
-    paths.output_paths.images = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.assets}/${paths.defaults.images}/`);
+    paths.output_paths.images = tools.fixDirectoryPath(`${paths.output_paths.dist}/${paths.defaults.assets}/${paths.defaults.images}/`);
 
     // JS path
-    paths.output_paths.js = tools.fixDirectoryPath(`${paths.output_paths.theme}/${paths.defaults.assets}/${paths.defaults.js}/`);
+    paths.output_paths.js = tools.fixDirectoryPath(`${paths.output_paths.dist}/${paths.defaults.assets}/${paths.defaults.js}/`);
 
 
     return paths;
