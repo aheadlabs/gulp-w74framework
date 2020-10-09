@@ -3,7 +3,8 @@
         "theme_slug": null,
         "theme_path": null,
         "dist": null,
-        "dev_proxy": null
+        "dev_proxy": null,
+        "wordpress_theme_path": null
     },
     "defaults": {
         "node_modules": "node_modules",
@@ -24,6 +25,13 @@
     },
     "output_paths": {
         "dist": null,
+        "assets": null,
+        "css": null,
+        "images": null,
+        "js": null
+    },
+    "output_wordpress_theme": {
+        "dest": null,
         "assets": null,
         "css": null,
         "images": null,

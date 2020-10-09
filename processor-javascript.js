@@ -20,6 +20,12 @@ exports.default = (done) => {
         `${_paths.source_paths.node_modules}bootstrap/dist/js/bootstrap.bundle.min.js`,
         `${_paths.source_paths.node_modules}jquery/dist/jquery.slim.min.js`
     ], _paths.output_paths.js);
+
+    if(_paths.output_wordpress_theme.dest){
+        this.delete(`${_paths.output_wordpress_theme.js}**/*.js`);
+        this.bareCopy(`${_paths.output_paths.js}scripts.min.js`, `${_paths.output_wordpress_theme.js}`);
+    }
+
     done();
 };
 
@@ -28,11 +34,17 @@ exports.delete = (path) => {
     return del(path, {force: true});
 }
 
-exports.copy = (source, destination) => {    
+exports.copy = (source, destination) => {
     logger.info(`Moving JavaScript files from ${source} to ${destination}`);
     return gulp.src(source)
         .pipe(concat('scripts.min.js'))
         .pipe(stripdebug())
         .pipe(uglify())
+        .pipe(gulp.dest(destination));
+}
+
+exports.bareCopy = (source, destination) => {
+    logger.info(`Copying JavaScript files from ${source} to ${destination}`);
+    return gulp.src(source)
         .pipe(gulp.dest(destination));
 }

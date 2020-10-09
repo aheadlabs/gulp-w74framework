@@ -13,8 +13,13 @@ _paths = core.setPaths(_paths);
 if(!_paths) throw errors.path_not_set;
 
 exports.default = (done) => {
-    this.delete(`${_paths.output_paths.theme}**/*.php`);
-    this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_paths.theme);
+    this.delete(`${_paths.output_paths.dist}**/*.php`);
+    this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_paths.dist);
+
+    if(_paths.output_wordpress_theme.dest){
+        this.delete(`${_paths.output_wordpress_theme.dest}**/*.php`);
+        this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_wordpress_theme.dest)
+    }
     done();
 };
 

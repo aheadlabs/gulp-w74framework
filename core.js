@@ -94,6 +94,26 @@ exports.setPaths = function(paths) {
     // JS path
     paths.output_paths.js = tools.fixDirectoryPath(`${paths.output_paths.dist}/${paths.defaults.assets}/${paths.defaults.js}/`);
 
-    logger.debug(paths);
+    /**
+     * Output WordPress
+     */
+
+    // Destination path
+    paths.output_wordpress_theme.dest = tools.fixDirectoryPath(paths.parameters.wordpress_theme_path);
+
+    // Assets path
+    paths.output_wordpress_theme.assets = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/`);
+
+    // CSS path
+    paths.output_wordpress_theme.css = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.css}/`);
+
+    // Images path
+    paths.output_wordpress_theme.images = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.images}/`);
+
+    // JS path
+    paths.output_wordpress_theme.js = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.js}/`);
+
+
+    logger.debug(JSON.stringify(paths));
     return paths;
 }

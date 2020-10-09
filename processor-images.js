@@ -15,12 +15,20 @@ if(!_paths) throw errors.path_not_set;
 
 exports.default = (done) => {
     // Copy screenshot image
-    this.delete(`${_paths.output_paths.theme}screenshot.png`);
-    this.copy(`${_paths.source_paths.root}screenshot.png`, `${_paths.output_paths.theme}`);
+    this.delete(`${_paths.output_paths.dist}screenshot.png`);
+    this.copy(`${_paths.source_paths.root}screenshot.png`, `${_paths.output_paths.dist}`);
+    if(_paths.output_wordpress_theme.dest){
+        this.delete(`${_paths.output_wordpress_theme.dest}screenshot.png`);
+        this.copy(`${_paths.source_paths.root}screenshot.png`, _paths.output_wordpress_theme.dest)
+    }
 
     // Copy asset images
     this.delete(`${_paths.output_paths.images}`);
     this.copy(`${_paths.source_paths.images}**/*`, `${_paths.output_paths.images}`);
+    if(_paths.output_wordpress_theme.dest){
+        this.delete(`${_paths.output_wordpress_theme.images}`);
+        this.copy(`${_paths.source_paths.images}**/*`, _paths.output_wordpress_theme.images)
+    }
 
     done();
 };

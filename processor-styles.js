@@ -22,16 +22,22 @@ const cssProcessors = [
 
 exports.default = (done) => {
     // Get theme version
-    const version = core.getVersionFromPackage(_paths.parameters.theme_path);
+    const version = core.getVersionFromPackage(_paths.source_paths.root);
     logger.debug(`Theme version is ${version}`);
 
     // Delete output files
-    this.delete(`${_paths.output_paths.theme}*.css`);
+    this.delete(`${_paths.output_paths.dist}*.css`);
 
     // Transpile SCSS files
-    this.transpileScss(`${_paths.source_paths.css}*.scss`, `${_paths.output_paths.theme}`, version);
+    this.transpileScss(`${_paths.source_paths.css}*.scss`, `${_paths.output_paths.dist}`, version);
     logger.debug('Bootstrap SCSS files are @include-d in the styles.scss file from the node_modules sources.');
     logger.debug('Finished transpilation of styles');
+
+    // Copy to WordPress if necessary
+    if(_paths.output_wordpress_theme.dest){
+        this.delete(`${_paths.output_wordpress_theme.dest}*.css`);
+        this.copy(`${_paths.output_paths.dist}*.css`, _paths.output_wordpress_theme.dest)
+    }
 
     done();
 };
@@ -49,6 +55,13 @@ exports.transpileScss = (source, destination, version) => {
         }))
         .pipe(replace('{{version}}', `${version}`))
         .pipe(postcss(cssProcessors))
+        .pipe(newer(destination))
+        .pipe(gulp.dest(destination));
+}
+
+exports.copy = (source, destination) => {
+    logger.info(`Copying styles from ${source} to ${destination}`);
+    return gulp.src(source)
         .pipe(newer(destination))
         .pipe(gulp.dest(destination));
 }
