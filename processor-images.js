@@ -13,16 +13,29 @@ let _paths = core.parseArguments();
 _paths = core.setPaths(_paths);
 if(!_paths) throw errors.path_not_set;
 
-exports.default = async (done) => {
+exports.default = () => {
+
+    // Set the source and destination files
+    let source = [`${_paths.source_paths.root}screenshot.png`, `${_paths.source_paths.images}**/*`]
+    let destination = [`${_paths.output_paths.dist}`, `${_paths.output_paths.images}`]
+
+    logger.info(`Processing images...`);
+
+    // Process
+    return gulp.src(source).on('end', function() {
+        logger.info(`Deleting image files...`);
+        return del(source, {force: true});
+    }).pipe(imagemin({verbose: true}))
+        .pipe(gulp.dest(destination[0]))
+        .pipe(gulp.dest(destination[1]));
+
     // Copy screenshot image
-    await this.delete(`${_paths.output_paths.dist}screenshot.png`);
-    await this.copy(`${_paths.source_paths.root}screenshot.png`, `${_paths.output_paths.dist}`);
+    // await this.delete(`${_paths.output_paths.dist}screenshot.png`);
+    // await this.copy(`${_paths.source_paths.root}screenshot.png`, `${_paths.output_paths.dist}`);
 
     // Copy asset images
-    await this.delete(`${_paths.output_paths.images}`);
-    await this.copy(`${_paths.source_paths.images}**/*`, `${_paths.output_paths.images}`);
-
-    done();
+    // await this.delete(`${_paths.output_paths.images}`);
+    // await this.copy(`${_paths.source_paths.images}**/*`, `${_paths.output_paths.images}`);
 };
 
 exports.delete = (path) => {
