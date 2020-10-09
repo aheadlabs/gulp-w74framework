@@ -12,15 +12,11 @@ let _paths = core.parseArguments();
 _paths = core.setPaths(_paths);
 if(!_paths) throw errors.path_not_set;
 
-exports.default = (done) => {
-    this.delete(`${_paths.output_paths.dist}**/*.php`);
-    this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_paths.dist);
+exports.default = async (done) => {
+    await this.delete(`${_paths.output_paths.dist}**/*.php`);
+    await this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_paths.dist);
 
-    if(_paths.output_wordpress_theme.dest){
-        this.delete(`${_paths.output_wordpress_theme.dest}**/*.php`);
-        this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_wordpress_theme.dest)
-    }
-    done();
+    //done();
 };
 
 exports.delete = (path) => {
@@ -33,4 +29,9 @@ exports.copy = (source, destination) => {
     return gulp.src(source)
         .pipe(newer(destination))
         .pipe(gulp.dest(destination));
+}
+
+exports.distWordpress = () => {
+    this.delete(`${_paths.output_wordpress_theme.dest}**/*.php`);
+    this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_wordpress_theme.dest)
 }

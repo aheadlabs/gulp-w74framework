@@ -21,11 +21,6 @@ exports.default = (done) => {
         `${_paths.source_paths.node_modules}jquery/dist/jquery.slim.min.js`
     ], _paths.output_paths.js);
 
-    if(_paths.output_wordpress_theme.dest){
-        this.delete(`${_paths.output_wordpress_theme.js}**/*.js`);
-        this.bareCopy(`${_paths.output_paths.js}scripts.min.js`, `${_paths.output_wordpress_theme.js}`);
-    }
-
     done();
 };
 
@@ -47,4 +42,9 @@ exports.bareCopy = (source, destination) => {
     logger.info(`Copying JavaScript files from ${source} to ${destination}`);
     return gulp.src(source)
         .pipe(gulp.dest(destination));
+}
+
+exports.distWordpress = () => {
+    this.delete(`${_paths.output_wordpress_theme.js}**/*.js`);
+    this.bareCopy(`${_paths.output_paths.js}scripts.min.js`, `${_paths.output_wordpress_theme.js}`);
 }

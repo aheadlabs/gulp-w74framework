@@ -35,7 +35,7 @@ exports.parseArguments = () => {
     commandLineArguments.forEach(argument => {
         const argumentData = argument.match(searchExpression);
         if(argumentData.length !== 3) throw `${errors.parameter_syntax_not_valid} : ${argument}`;
-        let _name = argumentData[1].replace('-', '_');
+        let _name = argumentData[1].replace(/-/g, '_');
         let _value = tools.fixDirectoryPath(argumentData[2]);
         _paths.parameters[_name] = _value;
         logger.debug(`Parsed parameter with name \"${_name}\" and value \"${_value}\"`);
@@ -98,20 +98,22 @@ exports.setPaths = function(paths) {
      * Output WordPress
      */
 
-    // Destination path
-    paths.output_wordpress_theme.dest = tools.fixDirectoryPath(paths.parameters.wordpress_theme_path);
+    if (paths.parameters.wordpress_theme_path){
+        // Destination path
+        paths.output_wordpress_theme.dest = tools.fixDirectoryPath(paths.parameters.wordpress_theme_path);
 
-    // Assets path
-    paths.output_wordpress_theme.assets = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/`);
+        // Assets path
+        paths.output_wordpress_theme.assets = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/`);
 
-    // CSS path
-    paths.output_wordpress_theme.css = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.css}/`);
+        // CSS path
+        paths.output_wordpress_theme.css = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.css}/`);
 
-    // Images path
-    paths.output_wordpress_theme.images = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.images}/`);
+        // Images path
+        paths.output_wordpress_theme.images = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.images}/`);
 
-    // JS path
-    paths.output_wordpress_theme.js = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.js}/`);
+        // JS path
+        paths.output_wordpress_theme.js = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.js}/`);
+    }
 
 
     logger.debug(JSON.stringify(paths));

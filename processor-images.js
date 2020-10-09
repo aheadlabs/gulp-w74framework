@@ -13,22 +13,14 @@ let _paths = core.parseArguments();
 _paths = core.setPaths(_paths);
 if(!_paths) throw errors.path_not_set;
 
-exports.default = (done) => {
+exports.default = async (done) => {
     // Copy screenshot image
-    this.delete(`${_paths.output_paths.dist}screenshot.png`);
-    this.copy(`${_paths.source_paths.root}screenshot.png`, `${_paths.output_paths.dist}`);
-    if(_paths.output_wordpress_theme.dest){
-        this.delete(`${_paths.output_wordpress_theme.dest}screenshot.png`);
-        this.copy(`${_paths.source_paths.root}screenshot.png`, _paths.output_wordpress_theme.dest)
-    }
+    await this.delete(`${_paths.output_paths.dist}screenshot.png`);
+    await this.copy(`${_paths.source_paths.root}screenshot.png`, `${_paths.output_paths.dist}`);
 
     // Copy asset images
-    this.delete(`${_paths.output_paths.images}`);
-    this.copy(`${_paths.source_paths.images}**/*`, `${_paths.output_paths.images}`);
-    if(_paths.output_wordpress_theme.dest){
-        this.delete(`${_paths.output_wordpress_theme.images}`);
-        this.copy(`${_paths.source_paths.images}**/*`, _paths.output_wordpress_theme.images)
-    }
+    await this.delete(`${_paths.output_paths.images}`);
+    await this.copy(`${_paths.source_paths.images}**/*`, `${_paths.output_paths.images}`);
 
     done();
 };
@@ -44,4 +36,11 @@ exports.copy = (source, destination) => {
         .pipe(newer(destination))
         .pipe(imagemin({verbose: true}))
         .pipe(gulp.dest(destination));
+}
+
+exports.distWordpress = () => {
+    this.delete(`${_paths.output_wordpress_theme.dest}screenshot.png`);
+    this.copy(`${_paths.source_paths.root}screenshot.png`, _paths.output_wordpress_theme.dest);
+    this.delete(`${_paths.output_wordpress_theme.images}`);
+    this.copy(`${_paths.source_paths.images}**/*`, _paths.output_wordpress_theme.images);
 }

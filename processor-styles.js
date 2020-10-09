@@ -33,12 +33,6 @@ exports.default = (done) => {
     logger.debug('Bootstrap SCSS files are @include-d in the styles.scss file from the node_modules sources.');
     logger.debug('Finished transpilation of styles');
 
-    // Copy to WordPress if necessary
-    if(_paths.output_wordpress_theme.dest){
-        this.delete(`${_paths.output_wordpress_theme.dest}*.css`);
-        this.copy(`${_paths.output_paths.dist}*.css`, _paths.output_wordpress_theme.dest)
-    }
-
     done();
 };
 
@@ -64,4 +58,9 @@ exports.copy = (source, destination) => {
     return gulp.src(source)
         .pipe(newer(destination))
         .pipe(gulp.dest(destination));
+}
+
+exports.distWordpress = () => {
+    this.delete(`${_paths.output_wordpress_theme.dest}*.css`);
+    this.copy(`${_paths.output_paths.dist}*.css`, _paths.output_wordpress_theme.dest);
 }

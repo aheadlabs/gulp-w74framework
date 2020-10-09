@@ -8,7 +8,8 @@ exports.build = gulp.series(
     require('./processor-php').default,
     require('./processor-images').default,
     require('./processor-styles').default,
-    require('./processor-javascript').default
+    require('./processor-javascript').default/*,
+    require('./processor-wordpress').default*/
 );
 
 exports.watch = gulp.series(
