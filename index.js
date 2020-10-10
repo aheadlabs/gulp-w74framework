@@ -6,7 +6,8 @@ watcher = require('./watcher').default
 
 exports.build = gulp.series(
     require('./processor-php').default,
-    require('./processor-images').default,
+    require('./processor-images').rootImagesProcess,
+    require('./processor-images').assetsImagesProcess,
     require('./processor-styles').default,
     require('./processor-javascript').default/*,
     require('./processor-wordpress').default*/

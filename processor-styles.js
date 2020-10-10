@@ -20,47 +20,37 @@ const cssProcessors = [
     require('cssnano')
 ];
 
-exports.default = (done) => {
+exports.default = () => {
     // Get theme version
     const version = core.getVersionFromPackage(_paths.source_paths.root);
     logger.debug(`Theme version is ${version}`);
 
-    // Delete output files
-    this.delete(`${_paths.output_paths.dist}*.css`);
+    let source = [`${_paths.source_paths.css}*.scss`];
+    let destination = `${_paths.output_paths.dist}`;
 
-    // Transpile SCSS files
-    this.transpileScss(`${_paths.source_paths.css}*.scss`, `${_paths.output_paths.dist}`, version);
-    logger.debug('Bootstrap SCSS files are @include-d in the styles.scss file from the node_modules sources.');
-    logger.debug('Finished transpilation of styles');
+    logger.info(`Processing styles files...`);
 
-    done();
-};
-
-exports.delete = (path) => {
-    logger.info(`Deleting CSS files from ${path}`);
-    return del(path, {force: true});
-}
-
-exports.transpileScss = (source, destination, version) => {
-    logger.info(`Transpiling SCSS files from ${source} to ${destination}`);
-    return gulp.src(source)
+    return gulp.src(source).on('end', function() {
+        logger.info(`Deleting styles files from ${destination}`);
+        return del(`${destination}*.css`, {force: true});
+    })
         .pipe(sass({
             outputStyle: 'compressed'
-        }))
-        .pipe(replace('{{version}}', `${version}`))
-        .pipe(postcss(cssProcessors))
-        .pipe(newer(destination))
-        .pipe(gulp.dest(destination));
-}
-
-exports.copy = (source, destination) => {
-    logger.info(`Copying styles from ${source} to ${destination}`);
-    return gulp.src(source)
-        .pipe(newer(destination))
-        .pipe(gulp.dest(destination));
-}
+        })).on('end', function() {
+            logger.info(`Transpiling sass files...`);
+        })
+        .pipe(replace('{{version}}', `${version}`)).on('end', function() {
+            logger.info(`Replacing version with value: ${version}`);
+        })
+        .pipe(postcss(cssProcessors)).on('end', function() {
+            logger.info(`Moving styles files from ${source} to ${destination}`);
+        })
+        .pipe(gulp.dest(destination)).on('end', function() {
+            logger.info(`Finished processing styles files.`);
+        });
+};
 
 exports.distWordpress = () => {
-    this.delete(`${_paths.output_wordpress_theme.dest}*.css`);
-    this.copy(`${_paths.output_paths.dist}*.css`, _paths.output_wordpress_theme.dest);
+    // this.delete(`${_paths.output_wordpress_theme.dest}*.css`);
+    // this.copy(`${_paths.output_paths.dist}*.css`, _paths.output_wordpress_theme.dest);
 }

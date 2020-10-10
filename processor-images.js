@@ -13,47 +13,38 @@ let _paths = core.parseArguments();
 _paths = core.setPaths(_paths);
 if(!_paths) throw errors.path_not_set;
 
-exports.default = () => {
-
-    // Set the source and destination files
-    let source = [`${_paths.source_paths.root}screenshot.png`, `${_paths.source_paths.images}**/*`]
-    let destination = [`${_paths.output_paths.dist}`, `${_paths.output_paths.images}`]
-
-    logger.info(`Processing images...`);
-
-    // Process
-    return gulp.src(source).on('end', function() {
-        logger.info(`Deleting image files...`);
-        return del(source, {force: true});
-    }).pipe(imagemin({verbose: true}))
-        .pipe(gulp.dest(destination[0]))
-        .pipe(gulp.dest(destination[1]));
-
-    // Copy screenshot image
-    // await this.delete(`${_paths.output_paths.dist}screenshot.png`);
-    // await this.copy(`${_paths.source_paths.root}screenshot.png`, `${_paths.output_paths.dist}`);
-
-    // Copy asset images
-    // await this.delete(`${_paths.output_paths.images}`);
-    // await this.copy(`${_paths.source_paths.images}**/*`, `${_paths.output_paths.images}`);
-};
-
-exports.delete = (path) => {
-    logger.info(`Deleting image files from ${path}`);
-    return del(path, {force: true});
+exports.rootImagesProcess = () => {
+    logger.info(`Processing root image files...`);
+     return gulp.src(`${_paths.source_paths.root}screenshot.png`).on('end', function() {
+        logger.info(`Deleting image files from ${_paths.output_paths.dist}`);
+        return del(`${_paths.output_paths.dist}screenshot.png`, {force: true});
+    })
+        .pipe(imagemin({verbose: true})).on('end', function() {
+             logger.info(`Finished minifying image files.`);
+             logger.info(`Moving images from ${_paths.source_paths.root} to ${_paths.output_paths.dist}`);
+         })
+        .pipe(gulp.dest(`${_paths.output_paths.dist}`)).on('end', function() {
+             logger.info(`Finished processing root images`);
+         });
 }
 
-exports.copy = (source, destination) => {    
-    logger.info(`Compressing and moving images from ${source} to ${destination}`);
-    return gulp.src(source)
-        .pipe(newer(destination))
-        .pipe(imagemin({verbose: true}))
-        .pipe(gulp.dest(destination));
+exports.assetsImagesProcess = () => {
+    logger.info(`Processing assets image files...`);
+    return gulp.src(`${_paths.source_paths.images}**/*`).on('end', function() {
+        logger.info(`Deleting image files from ${_paths.output_paths.images}`);
+        return del(`${_paths.output_paths.images}**/*`, {force: true});
+    })
+        .pipe(imagemin({verbose: true})).on('end', function() {
+            logger.info(`Finished minifying image files.`);
+            logger.info(`Moving images from ${_paths.source_paths.images} to ${_paths.output_paths.images}`);
+        })
+        .pipe(gulp.dest(`${_paths.output_paths.images}`));
 }
+
 
 exports.distWordpress = () => {
-    this.delete(`${_paths.output_wordpress_theme.dest}screenshot.png`);
-    this.copy(`${_paths.source_paths.root}screenshot.png`, _paths.output_wordpress_theme.dest);
-    this.delete(`${_paths.output_wordpress_theme.images}`);
-    this.copy(`${_paths.source_paths.images}**/*`, _paths.output_wordpress_theme.images);
+    // this.delete(`${_paths.output_wordpress_theme.dest}screenshot.png`);
+    // this.copy(`${_paths.source_paths.root}screenshot.png`, _paths.output_wordpress_theme.dest);
+    // this.delete(`${_paths.output_wordpress_theme.images}`);
+    // this.copy(`${_paths.source_paths.images}**/*`, _paths.output_wordpress_theme.images);
 }

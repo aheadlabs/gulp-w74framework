@@ -12,26 +12,26 @@ let _paths = core.parseArguments();
 _paths = core.setPaths(_paths);
 if(!_paths) throw errors.path_not_set;
 
-exports.default = async (done) => {
-    await this.delete(`${_paths.output_paths.dist}**/*.php`);
-    await this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_paths.dist);
+exports.default = () => {
 
-    //done();
+    let source = [`${_paths.source_paths.src}**/*.php`];
+    let destination = `${_paths.output_paths.dist}`;
+
+    logger.info(`Processing PHP files...`);
+
+    return gulp.src(source).on('end', function() {
+        logger.info(`Deleting PHP files from ${destination}`);
+        return del(`${destination}**/*.php`, {force: true});
+    })
+        .pipe(newer(destination)).on('end', function() {
+            logger.info(`Moving PHP files from ${source} to ${destination}`);
+        })
+        .pipe(gulp.dest(destination)).on('end', function() {
+            logger.info(`Finished processing PHP files.`);
+        })
 };
 
-exports.delete = (path) => {
-    logger.info(`Deleting PHP files from ${path}`);
-    return del(path, {force: true});
-}
-
-exports.copy = (source, destination) => {    
-    logger.info(`Moving PHP files from ${source} to ${destination}`);
-    return gulp.src(source)
-        .pipe(newer(destination))
-        .pipe(gulp.dest(destination));
-}
-
 exports.distWordpress = () => {
-    this.delete(`${_paths.output_wordpress_theme.dest}**/*.php`);
-    this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_wordpress_theme.dest)
+    // this.delete(`${_paths.output_wordpress_theme.dest}**/*.php`);
+    // this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_wordpress_theme.dest)
 }

@@ -14,37 +14,35 @@ let _paths = core.parseArguments();
 _paths = core.setPaths(_paths);
 if(!_paths) throw errors.path_not_set;
 
-exports.default = (done) => {
-    this.delete(`${_paths.output_paths.js}**/*.js`);
-    this.copy([
-        `${_paths.source_paths.node_modules}bootstrap/dist/js/bootstrap.bundle.min.js`,
-        `${_paths.source_paths.node_modules}jquery/dist/jquery.slim.min.js`
-    ], _paths.output_paths.js);
+exports.default = () => {
 
-    done();
+    let source = [`${_paths.source_paths.node_modules}bootstrap/dist/js/bootstrap.bundle.min.js`];
+    let destination = `${_paths.source_paths.node_modules}jquery/dist/jquery.slim.min.js`;
+
+    logger.info(`Processing Javascript files...`);
+
+    return gulp.src(source).on('end', function() {
+        logger.info(`Deleting Javascript files from ${destination}`);
+        return del(`${_paths.output_paths.js}**/*.js`, {force: true});
+    })
+        .pipe(concat('scripts.min.js')).on('end', function() {
+            logger.info(`Concatenated Javascript into scripts.min.js`);
+            logger.info(`Starting stripdebug() process on scripts.min.js`)
+        })
+        .pipe(stripdebug()).on('end', function() {
+            logger.info(`Finished stripdebug() process on scripts.min.js`);
+            logger.info(`Starting uglify() process on scripts.min.js`)
+        })
+        .pipe(uglify()).on('end', function() {
+            logger.info(`Finished uglify() process on scripts.min.js`);
+            logger.info(`Moving Javascript files from ${source} to ${destination}`);
+        })
+        .pipe(gulp.dest(destination)).on('end', function() {
+            logger.info(`Finished processing Javascript files.`);
+        });
 };
 
-exports.delete = (path) => {
-    logger.info(`Deleting JavaScript files from ${path}`);
-    return del(path, {force: true});
-}
-
-exports.copy = (source, destination) => {
-    logger.info(`Moving JavaScript files from ${source} to ${destination}`);
-    return gulp.src(source)
-        .pipe(concat('scripts.min.js'))
-        .pipe(stripdebug())
-        .pipe(uglify())
-        .pipe(gulp.dest(destination));
-}
-
-exports.bareCopy = (source, destination) => {
-    logger.info(`Copying JavaScript files from ${source} to ${destination}`);
-    return gulp.src(source)
-        .pipe(gulp.dest(destination));
-}
-
 exports.distWordpress = () => {
-    this.delete(`${_paths.output_wordpress_theme.js}**/*.js`);
-    this.bareCopy(`${_paths.output_paths.js}scripts.min.js`, `${_paths.output_wordpress_theme.js}`);
+    // this.delete(`${_paths.output_wordpress_theme.js}**/*.js`);
+    // this.bareCopy(`${_paths.output_paths.js}scripts.min.js`, `${_paths.output_wordpress_theme.js}`);
 }
