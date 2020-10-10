@@ -4,7 +4,8 @@ del = require('del').sync,
 errors = require('./errors.json'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
-processorImages = require('./processor-images').default,
+processorRootImages = require('./processor-images').rootImagesProcess,
+processorAssetsImages = require('./processor-images').assetsImagesProcess,
 processorPhp = require('./processor-php').default,
 processorStyles = require('./processor-styles').default,
 tools = require('./tools')
@@ -49,7 +50,7 @@ exports.default = (done) => {
             `${_paths.source_paths.root}screenshot.png`, 
             `${_paths.source_paths.images}**/*`
         ], 
-        {}, gulp.series(processorImages, reload)
+        {}, gulp.series(processorRootImages, processorAssetsImages, reload)
     );
     gulp.watch(
         `${_paths.source_paths.css}*.*css`, 
