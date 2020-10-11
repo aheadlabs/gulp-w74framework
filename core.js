@@ -1,5 +1,5 @@
 const
-config = require('./config.json'),
+del = require('del').sync,
 errors = require('./errors.json'),
 { logger } = require('./logger'),
 _paths = require('./paths.json'),
@@ -8,25 +8,7 @@ util = require('util'),
 wp_cli = require('./wp-cli')
 ;
 
-exports.getVersionFromPackage = function(packagePath) {
-    const packageJson = require(`${packagePath}package.json`);
-    return packageJson.version;
-}
-
-exports.getVersion = util.deprecate(() => {
-    const
-        template = wp_cli.getOption('w74_version', _paths.output_paths.wordpress),
-        now = new Date(),
-        timestamp = now.getFullYear()
-            + tools.addLeadingZeros(now.getMonth())
-            + tools.addLeadingZeros(now.getDate())
-            + tools.addLeadingZeros(now.getHours())
-            + tools.addLeadingZeros(now.getMinutes())
-            + tools.addLeadingZeros(now.getSeconds());
-    return template.replace('{timestamp}', timestamp);
-}, 'This function is deprecated since the single source of truth for the version number should be the one specified in the package.json file and not in the database');
-
-exports.parseArguments = () => {
+function parseArguments() {
     // Filter arguments to the ones beginning by -
     const commandLineArguments = process.argv.filter(argument => argument.startsWith("-"));
 
@@ -43,13 +25,14 @@ exports.parseArguments = () => {
 
     return _paths;
 }
-exports.setPaths = function(paths) {
+
+function setPaths(paths) {
     /**
      * Slug
      */
     paths.parameters.theme_slug = tools.fixSlug(paths.parameters.theme_slug);
 
-    
+
     /**
      * Source
      */
@@ -65,13 +48,13 @@ exports.setPaths = function(paths) {
 
     // Assets path
     paths.source_paths.assets = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/`);
-    
+
     // CSS path
     paths.source_paths.css = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.css}/`);
-    
+
     // Images path
     paths.source_paths.images = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.images}/`);
-    
+
     // JS path
     paths.source_paths.js = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.js}/`);
 
@@ -116,6 +99,44 @@ exports.setPaths = function(paths) {
     }
 
 
-    logger.debug(JSON.stringify(paths));
+    logger.debug(`Paths: \n${JSON.stringify(paths)}`);
     return paths;
+}
+
+exports.getVersionFromPackage = function(packagePath) {
+    const packageJson = require(`${packagePath}package.json`);
+    return packageJson.version;
+}
+
+exports.getVersion = util.deprecate(() => {
+    const
+        template = wp_cli.getOption('w74_version', _paths.output_paths.wordpress),
+        now = new Date(),
+        timestamp = now.getFullYear()
+            + tools.addLeadingZeros(now.getMonth())
+            + tools.addLeadingZeros(now.getDate())
+            + tools.addLeadingZeros(now.getHours())
+            + tools.addLeadingZeros(now.getMinutes())
+            + tools.addLeadingZeros(now.getSeconds());
+    return template.replace('{timestamp}', timestamp);
+}, 'This function is deprecated since the single source of truth for the version number should be the one specified in the package.json file and not in the database');
+
+exports.getPaths = () => {
+    const paths = setPaths(parseArguments());
+    if(!paths) throw errors.path_not_set;
+    return paths;
+}
+
+exports.deleteFiles = (path, suffix) => {
+    logger.info(`Deleting PHP files from ${path}...`);
+    let fileList = del(`${path}${suffix}`, {force: true});
+    if (fileList.length === 0) {
+        logger.info('No files were deleted.');
+    }
+    else{
+        logger.info(`${fileList.length} files were deleted.`);
+        for (let index = 0; index < fileList.length; index++) {
+            logger.debug(`Deleted file: ${fileList[index]}`);
+        }
+    }
 }

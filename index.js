@@ -1,16 +1,16 @@
 const
 gulp = require('gulp'),
 { logger } = require('./logger'),
+processorPhp = require('./processor-php'),
+processorImages = require('./processor-images'),
 watcher = require('./watcher').default
 ;
 
 exports.build = gulp.series(
-    require('./processor-php').default,
-    require('./processor-images').rootImagesProcess,
-    require('./processor-images').assetsImagesProcess,
+    processorPhp.do,
+    processorImages.do/*,
     require('./processor-styles').default,
-    require('./processor-javascript').default/*,
-    require('./processor-wordpress').default*/
+    require('./processor-javascript').default*/
 );
 
 exports.watch = gulp.series(

@@ -1,7 +1,6 @@
 const
 core = require('./core'),
 del = require('del').sync,
-errors = require('./errors.json'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
 newer = require('gulp-newer'),
@@ -10,10 +9,10 @@ replace = require('gulp-replace'),
 sass = require('gulp-sass')
 ;
 
+let _paths;
+
 logger.info('Warming up styles processor...');
-let _paths = core.parseArguments();
-_paths = core.setPaths(_paths);
-if(!_paths) throw errors.path_not_set;
+_paths = core.getPaths();
 
 const cssProcessors = [
     require('autoprefixer')(),
@@ -21,6 +20,8 @@ const cssProcessors = [
 ];
 
 exports.default = () => {
+    logger.info('##### STYLES #####');
+
     // Get theme version
     const version = core.getVersionFromPackage(_paths.source_paths.root);
     logger.debug(`Theme version is ${version}`);
@@ -30,27 +31,27 @@ exports.default = () => {
 
     logger.info(`Processing styles files...`);
 
-    return gulp.src(source).on('end', function() {
-        logger.info(`Deleting styles files from ${destination}`);
-        return del(`${destination}*.css`, {force: true});
-    })
+    return gulp.src(source).on('end', () => {
+            logger.info(`Deleting styles files from ${destination}`);
+            return del(`${destination}*.css`, {force: true});
+        }).on('end', () => logger.info('Transpiling SASS files...'))
         .pipe(sass({
             outputStyle: 'compressed'
         })).on('end', function() {
-            logger.info(`Transpiling sass files...`);
+            logger.info('Transpiled SASS files');
         })
-        .pipe(replace('{{version}}', `${version}`)).on('end', function() {
+        .pipe(replace('{{version}}', `${version}`)).on('end', () => {
             logger.info(`Replacing version with value: ${version}`);
         })
-        .pipe(postcss(cssProcessors)).on('end', function() {
+        .pipe(postcss(cssProcessors)).on('end', () => {
             logger.info(`Moving styles files from ${source} to ${destination}`);
         })
-        .pipe(gulp.dest(destination)).on('end', function() {
-            logger.info(`Finished processing styles files.`);
+        .pipe(gulp.dest(destination)).on('end', () => {
+            logger.info(`Finished processing style files.`);
         });
 };
 
 exports.distWordpress = () => {
-    // this.delete(`${_paths.output_wordpress_theme.dest}*.css`);
-    // this.copy(`${_paths.output_paths.dist}*.css`, _paths.output_wordpress_theme.dest);
+    this.delete(`${_paths.output_wordpress_theme.dest}*.css`);
+    this.copy(`${_paths.output_paths.dist}*.css`, _paths.output_wordpress_theme.dest);
 }

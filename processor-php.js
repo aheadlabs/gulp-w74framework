@@ -1,37 +1,56 @@
 const
 core = require('./core'),
-del = require('del').sync,
-errors = require('./errors.json'),
 gulp = require('gulp'),
-{ logger } = require('./logger'),
-newer = require('gulp-newer')
+{ logger } = require('./logger')
 ;
 
-logger.info('Warming up PHP processor...');
-let _paths = core.parseArguments();
-_paths = core.setPaths(_paths);
-if(!_paths) throw errors.path_not_set;
+let 
+_paths,
+_source,
+_destination,
+_wordpress
+;
 
-exports.default = () => {
+exports.deployToWordpress = gulp.series(deleteWordpressFiles, copyWordpressFiles);
+exports.do = gulp.series(up, deleteDistFiles, processDistFiles, this.deployToWordpress, down);
 
-    let source = [`${_paths.source_paths.src}**/*.php`];
-    let destination = `${_paths.output_paths.dist}`;
+function up(done) {
+    logger.info('##### PHP #####');
+    logger.info('Warming up...');
+    _paths = core.getPaths();
+    _source = `${_paths.source_paths.src}**/*.php`;
+    _destination = `${_paths.output_paths.dist}`;
+    _wordpress = `${_paths.output_wordpress_theme.dest}`;
+    done();
+}
 
-    logger.info(`Processing PHP files...`);
+function down(done) {
+    logger.info('##### --- #####');
+    done();
+}
 
-    return gulp.src(source).on('end', function() {
-        logger.info(`Deleting PHP files from ${destination}`);
-        return del(`${destination}**/*.php`, {force: true});
-    })
-        .pipe(newer(destination)).on('end', function() {
-            logger.info(`Moving PHP files from ${source} to ${destination}`);
-        })
-        .pipe(gulp.dest(destination)).on('end', function() {
-            logger.info(`Finished processing PHP files.`);
-        })
-};
+function deleteDistFiles(done) {
+    core.deleteFiles(_destination, '**/*.php');
+    done();
+}
 
-exports.distWordpress = () => {
-    // this.delete(`${_paths.output_wordpress_theme.dest}**/*.php`);
-    // this.copy(`${_paths.source_paths.src}**/*.php`, _paths.output_wordpress_theme.dest)
+function processDistFiles() {
+    return gulp.src(_source)
+        .on('end', () => logger.info(`Copying PHP files from ${_source} to ${_destination}...`))
+        .pipe(gulp.dest(_destination))
+        .on('end', () => logger.info('Finished processing PHP files.'))
+    ;
+}
+
+function deleteWordpressFiles(done) {
+    core.deleteFiles(_wordpress, '**/*.php');
+    done();
+}
+
+function copyWordpressFiles() {
+    return gulp.src(`${_destination}**/*.php`)
+        .on('end', () => logger.info(`Copying PHP files from ${_destination} to ${_wordpress}...`))
+        .pipe(gulp.dest(_wordpress))        
+        .on('end', () => logger.info('Finished deployment of PHP files.'))
+    ;
 }

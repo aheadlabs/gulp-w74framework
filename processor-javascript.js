@@ -2,17 +2,16 @@ const
 concat = require('gulp-concat'),
 core = require('./core'),
 del = require('del').sync,
-errors = require('./errors.json'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
 stripdebug = require('gulp-strip-debug'),
 uglify = require('gulp-uglify')
 ;
 
+let _paths;
+
 logger.info('Warming up JavaScript processor...');
-let _paths = core.parseArguments();
-_paths = core.setPaths(_paths);
-if(!_paths) throw errors.path_not_set;
+_paths = core.getPaths();
 
 exports.default = () => {
 

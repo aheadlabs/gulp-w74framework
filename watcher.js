@@ -11,12 +11,13 @@ processorStyles = require('./processor-styles').default,
 tools = require('./tools')
 ;
 
-let browsersync = false;
+let
+browsersync = false,
+_paths
+;
 
 logger.info('Warming up watching engine...');
-let _paths = core.parseArguments();
-_paths = core.setPaths(_paths);
-if(!_paths) throw errors.path_not_set;
+_paths = core.getPaths();
 
 exports.default = (done) => {
     // Create and set up BrowserSync instance
