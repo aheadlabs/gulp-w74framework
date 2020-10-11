@@ -1,4 +1,10 @@
 # gulp-w74framework
+[![Last commit](https://img.shields.io/github/last-commit/aheadlabs/gulp-w74framework)](https://github.com/aheadlabs/gulp-w74framework/commits/)
+[![GitHub SemVer tag](https://img.shields.io/github/v/tag/aheadlabs/gulp-w74framework)](https://github.com/aheadlabs/gulp-w74framework/tags)
+[![Repo size](https://img.shields.io/github/repo-size/aheadlabs/gulp-w74framework)](https://github.com/aheadlabs/gulp-w74framework)
+[![Top language](https://img.shields.io/github/languages/top/aheadlabs/gulp-w74framework)](https://github.com/aheadlabs/gulp-w74framework)
+[![License](https://img.shields.io/github/license/aheadlabs/devops-toolset)](https://github.com/aheadlabs/gulp-w74framework/blob/master/LICENSE)  
+
 This package provides Gulp support for the W74 WordPress framework. It is [listed in the npm package directory](https://www.npmjs.com/package/@aheadlabs/gulp-w74framework).  
 Everything than can be automated, must be automated!<br><br>
 ![Logo](.media/isologo-gulp-w74framework-400px.png)

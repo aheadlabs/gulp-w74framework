@@ -1,6 +1,6 @@
 {
   "name": "@aheadlabs/gulp-w74framework",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Gulp support for the W74 WordPress framework",
   "main": "index.js",
   "scripts": {
