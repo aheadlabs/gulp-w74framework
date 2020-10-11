@@ -3,20 +3,21 @@ gulp = require('gulp'),
 { logger } = require('./logger'),
 processorPhp = require('./processor-php'),
 processorImages = require('./processor-images'),
-processorJs = require('./processor-javascript'),
-watcher = require('./watcher').default
+processorStyles = require('./processor-styles'),
+processorJavascript = require('./processor-javascript'),
+watcher = require('./watcher')
 ;
 
 exports.build = gulp.series(
     processorPhp.do,
     processorImages.do,
-    processorJs.do/*,
-    require('./processor-javascript').default*/
+    processorStyles.do,
+    processorJavascript.do
 );
 
 exports.watch = gulp.series(
     this.build,
-    watcher
+    watcher.do
 );
 
 // TODO We are not deleting files from destination that are not in the Vinyl source, so newer() is useless.

@@ -19,7 +19,7 @@ _paths
 logger.info('Warming up watching engine...');
 _paths = core.getPaths();
 
-exports.default = (done) => {
+exports.do = (done) => {
     // Create and set up BrowserSync instance
     if(!browsersync) {
         browsersync = require('browser-sync').create();

@@ -103,7 +103,7 @@ function setPaths(paths) {
     return paths;
 }
 
-exports.getVersionFromPackage = function(packagePath) {
+exports.getVersionFromPackage = (packagePath) => {
     const packageJson = require(`${packagePath}package.json`);
     return packageJson.version;
 }

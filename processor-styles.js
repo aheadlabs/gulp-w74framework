@@ -1,57 +1,72 @@
 const
+autoprefixer = require('autoprefixer')(),
 core = require('./core'),
+cssnano = require('cssnano'),
 del = require('del').sync,
 gulp = require('gulp'),
 { logger } = require('./logger'),
-newer = require('gulp-newer'),
 postcss = require('gulp-postcss'),
 replace = require('gulp-replace'),
 sass = require('gulp-sass')
 ;
 
-let _paths;
+let 
+_paths,
+_source,
+_destination,
+_wordpress,
+_version
+;
 
-logger.info('Warming up styles processor...');
-_paths = core.getPaths();
+exports.deployToWordpress = gulp.series(deleteWordpressFiles, copyWordpressFiles);
+exports.do = gulp.series(up, deleteDistFiles, processDistFiles, this.deployToWordpress, down);
 
-const cssProcessors = [
-    require('autoprefixer')(),
-    require('cssnano')
-];
-
-exports.default = () => {
+function up(done) {
     logger.info('##### STYLES #####');
+    logger.info('Warming up...');
+    _paths = core.getPaths();
+    _source = `${_paths.source_paths.css}*.scss`;
+    _destination = `${_paths.output_paths.dist}`;
+    _wordpress = `${_paths.output_wordpress_theme.dest}`;
+    _version = core.getVersionFromPackage(_paths.source_paths.root);
+    logger.debug(`Theme version is ${_version}`);
+    done();
+}
 
-    // Get theme version
-    const version = core.getVersionFromPackage(_paths.source_paths.root);
-    logger.debug(`Theme version is ${version}`);
+function down(done) {
+    logger.info('##### --- #####');
+    done();
+}
 
-    let source = [`${_paths.source_paths.css}*.scss`];
-    let destination = `${_paths.output_paths.dist}`;
+function deleteDistFiles(done) {
+    core.deleteFiles(_destination, '*.css');
+    done();
+}
 
-    logger.info(`Processing styles files...`);
+function processDistFiles() {
+    return gulp.src(_source)
+        .on('end', () => logger.info('Transpiling SASS files...'))
+        .pipe(sass({outputStyle: 'compressed'}))
+        .on('end', () => logger.info(`Replacing version with value: ${_version}...`))
+        .pipe(replace('{{version}}', `${_version}`))
+        .on('end', () => logger.info('Prefixing CSS for browser polyfills...'))
+        .pipe(postcss([autoprefixer]))
+        .on('end', () => logger.info('Minifying...'))
+        .pipe(postcss([cssnano]))
+        .on('end', () => logger.info(`Copying style files to ${_destination}...`))
+        .pipe(gulp.dest(_destination))
+        .on('end', () => logger.info('Finished processing styles.'));
+}
 
-    return gulp.src(source).on('end', () => {
-            logger.info(`Deleting styles files from ${destination}`);
-            return del(`${destination}*.css`, {force: true});
-        }).on('end', () => logger.info('Transpiling SASS files...'))
-        .pipe(sass({
-            outputStyle: 'compressed'
-        })).on('end', function() {
-            logger.info('Transpiled SASS files');
-        })
-        .pipe(replace('{{version}}', `${version}`)).on('end', () => {
-            logger.info(`Replacing version with value: ${version}`);
-        })
-        .pipe(postcss(cssProcessors)).on('end', () => {
-            logger.info(`Moving styles files from ${source} to ${destination}`);
-        })
-        .pipe(gulp.dest(destination)).on('end', () => {
-            logger.info(`Finished processing style files.`);
-        });
-};
+function deleteWordpressFiles(done) {
+    core.deleteFiles(_wordpress, '*.css');
+    done();
+}
 
-exports.distWordpress = () => {
-    this.delete(`${_paths.output_wordpress_theme.dest}*.css`);
-    this.copy(`${_paths.output_paths.dist}*.css`, _paths.output_wordpress_theme.dest);
+function copyWordpressFiles() {
+    return gulp.src(`${_destination}*.css`)
+        .on('end', () => logger.info(`Copying style files from ${_destination} to ${_wordpress}...`))
+        .pipe(gulp.dest(_wordpress))        
+        .on('end', () => logger.info('Finished deployment of style files.'))
+    ;
 }
