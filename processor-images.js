@@ -1,47 +1,95 @@
 const
 core = require('./core'),
-del = require('del').sync,
-errors = require('./errors.json'),
+filter = require('gulp-filter'),
 gulp = require('gulp'),
 imagemin = require('gulp-imagemin'),
-{ logger } = require('./logger'),
-newer = require('gulp-newer')
+{ logger } = require('./logger')
 ;
 
-logger.info('Warming up image processor...');
-let _paths = core.parseArguments();
-_paths = core.setPaths(_paths);
-if(!_paths) throw errors.path_not_set;
+let 
+_paths,
+_source,
+_destination_root,
+_destination_assets,
+_wordpress_root,
+_wordpress_assets,
+_onlyScreenshot,
+_onlyScreenshotWp,
+_allButScreenshot,
+_allButScreenshotWp
+;
 
-exports.default = (done) => {
-    // Copy screenshot image
-    this.delete(`${_paths.output_paths.dist}screenshot.png`);
-    this.copy(`${_paths.source_paths.root}screenshot.png`, `${_paths.output_paths.dist}`);
-    if(_paths.output_wordpress_theme.dest){
-        this.delete(`${_paths.output_wordpress_theme.dest}screenshot.png`);
-        this.copy(`${_paths.source_paths.root}screenshot.png`, _paths.output_wordpress_theme.dest)
-    }
+exports.deployToWordpress = gulp.series(deleteWordpressFiles, copyWordpressFiles);
+exports.do = gulp.series(up, deleteDistFiles, processDistFiles, this.deployToWordpress, down);
 
-    // Copy asset images
-    this.delete(`${_paths.output_paths.images}`);
-    this.copy(`${_paths.source_paths.images}**/*`, `${_paths.output_paths.images}`);
-    if(_paths.output_wordpress_theme.dest){
-        this.delete(`${_paths.output_wordpress_theme.images}`);
-        this.copy(`${_paths.source_paths.images}**/*`, _paths.output_wordpress_theme.images)
-    }
-
+function up(done) {
+    logger.info('##### IMAGES #####');
+    logger.info('Warming up...');
+    _paths = core.getPaths();
+    _source = [
+        `${_paths.source_paths.root}screenshot.png`,
+        `${_paths.source_paths.images}**/*`
+    ];
+    _destination_root = `${_paths.output_paths.dist}`;
+    _destination_assets = `${_paths.output_paths.images}`;
+    _wordpress_root = `${_paths.output_wordpress_theme.dest}`;
+    _wordpress_assets = `${_paths.output_wordpress_theme.images}`;
+    _onlyScreenshot = filter(['screenshot.png'], { restore: true });
+    _onlyScreenshotWp = filter(['**/screenshot.png'], { restore: true });
+    _allButScreenshot = filter(['**/*', '!**/screenshot.png']);
+    _allButScreenshotWp = filter(['**/*', '!**/screenshot.png']);
     done();
-};
-
-exports.delete = (path) => {
-    logger.info(`Deleting image files from ${path}`);
-    return del(path, {force: true});
 }
 
-exports.copy = (source, destination) => {    
-    logger.info(`Compressing and moving images from ${source} to ${destination}`);
-    return gulp.src(source)
-        .pipe(newer(destination))
+function down(done) {
+    logger.info('##### --- #####');
+    done();
+}
+
+function deleteDistFiles(done) {
+    core.deleteFiles(_destination_root, 'screenshot.png');
+    core.deleteFiles(_destination_assets, '**/*');
+    done();
+}
+
+function processDistFiles() {
+    return gulp.src(_source)
+        .on('end', () => logger.info('Compressing images...'))
         .pipe(imagemin({verbose: true}))
-        .pipe(gulp.dest(destination));
+        .on('end', () => logger.info(`Copying images to ${_destination_root}...`))
+        .pipe(_onlyScreenshot)
+        .pipe(gulp.dest(_destination_root))
+        .pipe(_onlyScreenshot.restore)
+        .on('end', () => logger.info(`Copying images to ${_destination_assets}...`))
+        .pipe(_allButScreenshot)
+        .pipe(gulp.dest(_destination_assets))
+        .on('end', () => logger.info(`Finished processing images.`))
+    ;
+}
+
+function deleteWordpressFiles(done) {
+    if (_wordpress_root) {
+        core.deleteFiles(_wordpress_root, 'screenshot.png');
+        core.deleteFiles(_wordpress_assets, '**/*');
+    }
+    done();
+}
+
+function copyWordpressFiles(done) {
+    if(_wordpress_root) {
+        return gulp.src([
+                `${_destination_root}screenshot.png`,
+                `${_destination_assets}**/*`
+            ])
+            .on('end', () => logger.info(`Copying screenshot.png to WordPress...`))
+            .pipe(_onlyScreenshotWp)
+            .pipe(gulp.dest(_wordpress_root))
+            .pipe(_onlyScreenshotWp.restore)
+            .on('end', () => logger.info(`Copying asset images to WordPress...`))
+            .pipe(_allButScreenshotWp)
+            .pipe(gulp.dest(_wordpress_assets))
+            .on('end', () => logger.info('Finished deployment of images.'))
+        ;
+    }
+    done();
 }

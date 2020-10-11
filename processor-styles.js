@@ -1,67 +1,75 @@
 const
+autoprefixer = require('autoprefixer')(),
 core = require('./core'),
-del = require('del').sync,
-errors = require('./errors.json'),
+cssnano = require('cssnano'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
-newer = require('gulp-newer'),
 postcss = require('gulp-postcss'),
 replace = require('gulp-replace'),
 sass = require('gulp-sass')
 ;
 
-logger.info('Warming up styles processor...');
-let _paths = core.parseArguments();
-_paths = core.setPaths(_paths);
-if(!_paths) throw errors.path_not_set;
+let 
+_paths,
+_source,
+_destination,
+_wordpress,
+_version
+;
 
-const cssProcessors = [
-    require('autoprefixer')(),
-    require('cssnano')
-];
+exports.deployToWordpress = gulp.series(deleteWordpressFiles, copyWordpressFiles);
+exports.do = gulp.series(up, deleteDistFiles, processDistFiles, this.deployToWordpress, down);
 
-exports.default = (done) => {
-    // Get theme version
-    const version = core.getVersionFromPackage(_paths.source_paths.root);
-    logger.debug(`Theme version is ${version}`);
-
-    // Delete output files
-    this.delete(`${_paths.output_paths.dist}*.css`);
-
-    // Transpile SCSS files
-    this.transpileScss(`${_paths.source_paths.css}*.scss`, `${_paths.output_paths.dist}`, version);
-    logger.debug('Bootstrap SCSS files are @include-d in the styles.scss file from the node_modules sources.');
-    logger.debug('Finished transpilation of styles');
-
-    // Copy to WordPress if necessary
-    if(_paths.output_wordpress_theme.dest){
-        this.delete(`${_paths.output_wordpress_theme.dest}*.css`);
-        this.copy(`${_paths.output_paths.dist}*.css`, _paths.output_wordpress_theme.dest)
-    }
-
+function up(done) {
+    logger.info('##### STYLES #####');
+    logger.info('Warming up...');
+    _paths = core.getPaths();
+    _source = `${_paths.source_paths.css}*.scss`;
+    _destination = `${_paths.output_paths.dist}`;
+    _wordpress = `${_paths.output_wordpress_theme.dest}`;
+    _version = core.getVersionFromPackage(_paths.source_paths.root);
+    logger.debug(`Theme version is ${_version}`);
     done();
-};
-
-exports.delete = (path) => {
-    logger.info(`Deleting CSS files from ${path}`);
-    return del(path, {force: true});
 }
 
-exports.transpileScss = (source, destination, version) => {
-    logger.info(`Transpiling SCSS files from ${source} to ${destination}`);
-    return gulp.src(source)
-        .pipe(sass({
-            outputStyle: 'compressed'
-        }))
-        .pipe(replace('{{version}}', `${version}`))
-        .pipe(postcss(cssProcessors))
-        .pipe(newer(destination))
-        .pipe(gulp.dest(destination));
+function down(done) {
+    logger.info('##### --- #####');
+    done();
 }
 
-exports.copy = (source, destination) => {
-    logger.info(`Copying styles from ${source} to ${destination}`);
-    return gulp.src(source)
-        .pipe(newer(destination))
-        .pipe(gulp.dest(destination));
+function deleteDistFiles(done) {
+    core.deleteFiles(_destination, '*.css');
+    done();
+}
+
+function processDistFiles() {
+    return gulp.src(_source)
+        .on('end', () => logger.info('Transpiling SASS files...'))
+        .pipe(sass({outputStyle: 'compressed'}))
+        .on('end', () => logger.info(`Replacing version with value: ${_version}...`))
+        .pipe(replace('{{version}}', `${_version}`))
+        .on('end', () => logger.info('Prefixing CSS for browser polyfills...'))
+        .pipe(postcss([autoprefixer]))
+        .on('end', () => logger.info('Minifying...'))
+        .pipe(postcss([cssnano]))
+        .on('end', () => logger.info(`Copying style files to ${_destination}...`))
+        .pipe(gulp.dest(_destination))
+        .on('end', () => logger.info('Finished processing styles.'))
+    ;
+}
+
+function deleteWordpressFiles(done) {
+    if(_wordpress) core.deleteFiles(_wordpress, '*.css');
+    done();
+}
+
+function copyWordpressFiles(done) {
+    if(_wordpress) {
+        return gulp.src(`${_destination}*.css`)
+            .on('end', () => logger.info(`Copying style files from ${_destination} to ${_wordpress}...`))
+            .pipe(gulp.dest(_wordpress))        
+            .on('end', () => logger.info('Finished deployment of style files.'))
+        ;
+    }
+    done();
 }

@@ -1,5 +1,5 @@
 const
-config = require('./config.json'),
+del = require('del').sync,
 errors = require('./errors.json'),
 { logger } = require('./logger'),
 _paths = require('./paths.json'),
@@ -8,25 +8,7 @@ util = require('util'),
 wp_cli = require('./wp-cli')
 ;
 
-exports.getVersionFromPackage = function(packagePath) {
-    const packageJson = require(`${packagePath}package.json`);
-    return packageJson.version;
-}
-
-exports.getVersion = util.deprecate(() => {
-    const
-        template = wp_cli.getOption('w74_version', _paths.output_paths.wordpress),
-        now = new Date(),
-        timestamp = now.getFullYear()
-            + tools.addLeadingZeros(now.getMonth())
-            + tools.addLeadingZeros(now.getDate())
-            + tools.addLeadingZeros(now.getHours())
-            + tools.addLeadingZeros(now.getMinutes())
-            + tools.addLeadingZeros(now.getSeconds());
-    return template.replace('{timestamp}', timestamp);
-}, 'This function is deprecated since the single source of truth for the version number should be the one specified in the package.json file and not in the database');
-
-exports.parseArguments = () => {
+function parseArguments() {
     // Filter arguments to the ones beginning by -
     const commandLineArguments = process.argv.filter(argument => argument.startsWith("-"));
 
@@ -35,7 +17,7 @@ exports.parseArguments = () => {
     commandLineArguments.forEach(argument => {
         const argumentData = argument.match(searchExpression);
         if(argumentData.length !== 3) throw `${errors.parameter_syntax_not_valid} : ${argument}`;
-        let _name = argumentData[1].replace('-', '_');
+        let _name = argumentData[1].replace(/-/g, '_');
         let _value = tools.fixDirectoryPath(argumentData[2]);
         _paths.parameters[_name] = _value;
         logger.debug(`Parsed parameter with name \"${_name}\" and value \"${_value}\"`);
@@ -43,13 +25,14 @@ exports.parseArguments = () => {
 
     return _paths;
 }
-exports.setPaths = function(paths) {
+
+function setPaths(paths) {
     /**
      * Slug
      */
     paths.parameters.theme_slug = tools.fixSlug(paths.parameters.theme_slug);
 
-    
+
     /**
      * Source
      */
@@ -65,13 +48,13 @@ exports.setPaths = function(paths) {
 
     // Assets path
     paths.source_paths.assets = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/`);
-    
+
     // CSS path
     paths.source_paths.css = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.css}/`);
-    
+
     // Images path
     paths.source_paths.images = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.images}/`);
-    
+
     // JS path
     paths.source_paths.js = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.js}/`);
 
@@ -98,22 +81,62 @@ exports.setPaths = function(paths) {
      * Output WordPress
      */
 
-    // Destination path
-    paths.output_wordpress_theme.dest = tools.fixDirectoryPath(paths.parameters.wordpress_theme_path);
+    if (paths.parameters.wordpress_theme_path){
+        // Destination path
+        paths.output_wordpress_theme.dest = tools.fixDirectoryPath(paths.parameters.wordpress_theme_path);
 
-    // Assets path
-    paths.output_wordpress_theme.assets = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/`);
+        // Assets path
+        paths.output_wordpress_theme.assets = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/`);
 
-    // CSS path
-    paths.output_wordpress_theme.css = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.css}/`);
+        // CSS path
+        paths.output_wordpress_theme.css = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.css}/`);
 
-    // Images path
-    paths.output_wordpress_theme.images = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.images}/`);
+        // Images path
+        paths.output_wordpress_theme.images = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.images}/`);
 
-    // JS path
-    paths.output_wordpress_theme.js = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.js}/`);
+        // JS path
+        paths.output_wordpress_theme.js = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.js}/`);
+    }
 
 
-    logger.debug(JSON.stringify(paths));
+    logger.debug(`Paths: \n${JSON.stringify(paths)}`);
     return paths;
+}
+
+exports.getVersionFromPackage = (packagePath) => {
+    const packageJson = require(`${packagePath}package.json`);
+    return packageJson.version;
+}
+
+exports.getVersion = util.deprecate(() => {
+    const
+        template = wp_cli.getOption('w74_version', _paths.output_paths.wordpress),
+        now = new Date(),
+        timestamp = now.getFullYear()
+            + tools.addLeadingZeros(now.getMonth())
+            + tools.addLeadingZeros(now.getDate())
+            + tools.addLeadingZeros(now.getHours())
+            + tools.addLeadingZeros(now.getMinutes())
+            + tools.addLeadingZeros(now.getSeconds());
+    return template.replace('{timestamp}', timestamp);
+}, 'This function is deprecated since the single source of truth for the version number should be the one specified in the package.json file and not in the database');
+
+exports.getPaths = () => {
+    const paths = setPaths(parseArguments());
+    if(!paths) throw errors.path_not_set;
+    return paths;
+}
+
+exports.deleteFiles = (path, suffix) => {
+    logger.info(`Deleting files from ${path}...`);
+    let fileList = del(`${path}${suffix}`, {force: true});
+    if (fileList.length === 0) {
+        logger.info('No files were deleted.');
+    }
+    else{
+        logger.info(`${fileList.length} files were deleted.`);
+        for (let index = 0; index < fileList.length; index++) {
+            logger.debug(`Deleted file: ${fileList[index]}`);
+        }
+    }
 }
