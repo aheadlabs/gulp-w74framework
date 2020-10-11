@@ -3,8 +3,7 @@ core = require('./core'),
 filter = require('gulp-filter'),
 gulp = require('gulp'),
 imagemin = require('gulp-imagemin'),
-{ logger } = require('./logger'),
-print = require('gulp-print').default
+{ logger } = require('./logger')
 ;
 
 let 
@@ -69,25 +68,28 @@ function processDistFiles() {
 }
 
 function deleteWordpressFiles(done) {
-    core.deleteFiles(_wordpress_root, 'screenshot.png');
-    core.deleteFiles(_wordpress_assets, '**/*');
+    if (_wordpress_root) {
+        core.deleteFiles(_wordpress_root, 'screenshot.png');
+        core.deleteFiles(_wordpress_assets, '**/*');
+    }
     done();
 }
 
-function copyWordpressFiles() {
-    logger.info(_destination_root);
-    logger.info(_wordpress_root);
-    return gulp.src([
-            `${_destination_root}screenshot.png`,
-            `${_destination_assets}**/*`
-        ])
-        .on('end', () => logger.info(`Copying screenshot.png to WordPress...`))
-        .pipe(_onlyScreenshotWp)
-        .pipe(gulp.dest(_wordpress_root))
-        .pipe(_onlyScreenshotWp.restore)
-        .on('end', () => logger.info(`Copying asset images to WordPress...`))
-        .pipe(_allButScreenshotWp)
-        .pipe(gulp.dest(_wordpress_assets))
-        .on('end', () => logger.info('Finished deployment of images.'))
-    ;
+function copyWordpressFiles(done) {
+    if(_wordpress_root) {
+        return gulp.src([
+                `${_destination_root}screenshot.png`,
+                `${_destination_assets}**/*`
+            ])
+            .on('end', () => logger.info(`Copying screenshot.png to WordPress...`))
+            .pipe(_onlyScreenshotWp)
+            .pipe(gulp.dest(_wordpress_root))
+            .pipe(_onlyScreenshotWp.restore)
+            .on('end', () => logger.info(`Copying asset images to WordPress...`))
+            .pipe(_allButScreenshotWp)
+            .pipe(gulp.dest(_wordpress_assets))
+            .on('end', () => logger.info('Finished deployment of images.'))
+        ;
+    }
+    done();
 }

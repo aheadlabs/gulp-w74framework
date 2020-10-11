@@ -1,7 +1,6 @@
 const
 concat = require('gulp-concat'),
 core = require('./core'),
-del = require('del').sync,
 gulp = require('gulp'),
 { logger } = require('./logger'),
 stripdebug = require('gulp-strip-debug'),
@@ -57,14 +56,17 @@ function processDistFiles() {
 }
 
 function deleteWordpressFiles(done) {
-    core.deleteFiles(_wordpress, '**/*.js');
+    if(_wordpress) core.deleteFiles(_wordpress, '**/*.js');
     done();
 }
 
-function copyWordpressFiles() {
-    return gulp.src(`${_destination}**/*.js`)
-        .on('end', () => logger.info(`Copying JavaScript files from ${_destination} to ${_wordpress}...`))
-        .pipe(gulp.dest(_wordpress))        
-        .on('end', () => logger.info('Finished deployment of JavaScript files.'))
-    ;
+function copyWordpressFiles(done) {
+    if(_wordpress) {
+        return gulp.src(`${_destination}**/*.js`)
+            .on('end', () => logger.info(`Copying JavaScript files from ${_destination} to ${_wordpress}...`))
+            .pipe(gulp.dest(_wordpress))        
+            .on('end', () => logger.info('Finished deployment of JavaScript files.'))
+        ;
+    }
+    done();
 }

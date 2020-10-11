@@ -2,7 +2,6 @@ const
 autoprefixer = require('autoprefixer')(),
 core = require('./core'),
 cssnano = require('cssnano'),
-del = require('del').sync,
 gulp = require('gulp'),
 { logger } = require('./logger'),
 postcss = require('gulp-postcss'),
@@ -55,18 +54,22 @@ function processDistFiles() {
         .pipe(postcss([cssnano]))
         .on('end', () => logger.info(`Copying style files to ${_destination}...`))
         .pipe(gulp.dest(_destination))
-        .on('end', () => logger.info('Finished processing styles.'));
+        .on('end', () => logger.info('Finished processing styles.'))
+    ;
 }
 
 function deleteWordpressFiles(done) {
-    core.deleteFiles(_wordpress, '*.css');
+    if(_wordpress) core.deleteFiles(_wordpress, '*.css');
     done();
 }
 
-function copyWordpressFiles() {
-    return gulp.src(`${_destination}*.css`)
-        .on('end', () => logger.info(`Copying style files from ${_destination} to ${_wordpress}...`))
-        .pipe(gulp.dest(_wordpress))        
-        .on('end', () => logger.info('Finished deployment of style files.'))
-    ;
+function copyWordpressFiles(done) {
+    if(_wordpress) {
+        return gulp.src(`${_destination}*.css`)
+            .on('end', () => logger.info(`Copying style files from ${_destination} to ${_wordpress}...`))
+            .pipe(gulp.dest(_wordpress))        
+            .on('end', () => logger.info('Finished deployment of style files.'))
+        ;
+    }
+    done();
 }

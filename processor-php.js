@@ -43,14 +43,17 @@ function processDistFiles() {
 }
 
 function deleteWordpressFiles(done) {
-    core.deleteFiles(_wordpress, '**/*.php');
+    if (_wordpress) core.deleteFiles(_wordpress, '**/*.php');
     done();
 }
 
-function copyWordpressFiles() {
-    return gulp.src(`${_destination}**/*.php`)
-        .on('end', () => logger.info(`Copying PHP files from ${_destination} to ${_wordpress}...`))
-        .pipe(gulp.dest(_wordpress))        
-        .on('end', () => logger.info('Finished deployment of PHP files.'))
-    ;
+function copyWordpressFiles(done) {
+    if (_wordpress) {
+        return gulp.src(`${_destination}**/*.php`)
+            .on('end', () => logger.info(`Copying PHP files from ${_destination} to ${_wordpress}...`))
+            .pipe(gulp.dest(_wordpress))        
+            .on('end', () => logger.info('Finished deployment of PHP files.'))
+        ;
+    }
+    done();
 }
