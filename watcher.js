@@ -1,14 +1,12 @@
 const
 core = require('./core'),
-del = require('del').sync,
-errors = require('./errors.json'),
 gulp = require('gulp'),
 { logger } = require('./logger'),
-processorRootImages = require('./processor-images').rootImagesProcess,
-processorAssetsImages = require('./processor-images').assetsImagesProcess,
-processorPhp = require('./processor-php').default,
-processorStyles = require('./processor-styles').default,
-tools = require('./tools')
+
+processorPhp = require('./processor-php'),
+processorImages = require('./processor-images'),
+processorStyles = require('./processor-styles'),
+processorJavascript = require('./processor-javascript')
 ;
 
 let
@@ -16,7 +14,8 @@ browsersync = false,
 _paths
 ;
 
-logger.info('Warming up watching engine...');
+logger.info('##### WATCH ENGINE #####');
+logger.info('Warming up...');
 _paths = core.getPaths();
 
 exports.do = (done) => {
@@ -45,17 +44,21 @@ exports.do = (done) => {
     // Watch for files and fire actions accordingly
     gulp.watch(
         `${_paths.source_paths.src}**/*.php`, 
-        {}, gulp.series(processorPhp, reload)
+        {}, gulp.series(processorPhp.do, reload)
     );
     gulp.watch([
-            `${_paths.source_paths.root}screenshot.png`, 
+            `${_paths.source_paths.root}screenshot.png`,
             `${_paths.source_paths.images}**/*`
-        ], 
-        {}, gulp.series(processorRootImages, processorAssetsImages, reload)
+        ],
+        {}, gulp.series(processorImages.do, reload)
     );
     gulp.watch(
-        `${_paths.source_paths.css}*.*css`, 
-        {}, gulp.series(processorStyles, reload)
+        `${_paths.source_paths.css}*.*css`,
+        {}, gulp.series(processorStyles.do, reload)
+    );
+    gulp.watch(
+        `${_paths.source_paths.js}**/*.js`,
+        {}, gulp.series(processorJavascript.do, reload)
     );
 
     done();
