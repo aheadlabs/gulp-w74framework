@@ -128,7 +128,7 @@ exports.getPaths = () => {
 }
 
 exports.deleteFiles = (path, suffix) => {
-    logger.info(`Deleting PHP files from ${path}...`);
+    logger.info(`Deleting files from ${path}...`);
     let fileList = del(`${path}${suffix}`, {force: true});
     if (fileList.length === 0) {
         logger.info('No files were deleted.');

@@ -8,40 +8,63 @@ stripdebug = require('gulp-strip-debug'),
 uglify = require('gulp-uglify')
 ;
 
-let _paths;
+let 
+_paths,
+_source,
+_destination,
+_wordpress
+;
 
-logger.info('Warming up JavaScript processor...');
-_paths = core.getPaths();
+exports.deployToWordpress = gulp.series(deleteWordpressFiles, copyWordpressFiles);
+exports.do = gulp.series(up, deleteDistFiles, processDistFiles, this.deployToWordpress, down);
 
-exports.default = () => {
+function up(done) {
+    logger.info('##### JAVASCRIPT #####');
+    logger.info('Warming up...');
+    _paths = core.getPaths();
+    _source = [
+        `${_paths.source_paths.node_modules}bootstrap/dist/js/bootstrap.bundle.min.js`,
+        `${_paths.source_paths.node_modules}jquery/dist/jquery.slim.min.js`,
+        `${_paths.source_paths.js}**/*.js`
+    ];
+    _destination = `${_paths.output_paths.js}`;
+    _wordpress = `${_paths.output_wordpress_theme.js}`;
+    done();
+}
 
-    let source = [`${_paths.source_paths.node_modules}bootstrap/dist/js/bootstrap.bundle.min.js`];
-    let destination = `${_paths.source_paths.node_modules}jquery/dist/jquery.slim.min.js`;
+function down(done) {
+    logger.info('##### --- #####');
+    done();
+}
 
-    logger.info(`Processing Javascript files...`);
+function deleteDistFiles(done) {
+    core.deleteFiles(_destination, '**/*.js');
+    done();
+}
 
-    return gulp.src(source).on('end', function() {
-        logger.info(`Deleting Javascript files from ${destination}`);
-        return del(`${_paths.output_paths.js}**/*.js`, {force: true});
-    })
-        .pipe(concat('scripts.min.js')).on('end', function() {
-            logger.info(`Concatenated Javascript into scripts.min.js`);
-            logger.info(`Starting stripdebug() process on scripts.min.js`)
-        })
-        .pipe(stripdebug()).on('end', function() {
-            logger.info(`Finished stripdebug() process on scripts.min.js`);
-            logger.info(`Starting uglify() process on scripts.min.js`)
-        })
-        .pipe(uglify()).on('end', function() {
-            logger.info(`Finished uglify() process on scripts.min.js`);
-            logger.info(`Moving Javascript files from ${source} to ${destination}`);
-        })
-        .pipe(gulp.dest(destination)).on('end', function() {
-            logger.info(`Finished processing Javascript files.`);
-        });
-};
+function processDistFiles() {
+    return gulp.src(_source)
+        .on('end', () => logger.info('Concatenating scripts...'))
+        .pipe(concat('scripts.min.js'))
+        .on('end', () => logger.info('Removing debug stuff...'))
+        .pipe(stripdebug())
+        //.on('end', () => logger.info('Minifying...'))
+        //.pipe(uglify())
+        .on('end', () => logger.info(`Copying JavaScript files from ${_source} to ${_destination}...`))
+        .pipe(gulp.dest(_destination))
+        .on('end', () => logger.info('Finished processing JavaScript files.'))
+    ;
+}
 
-exports.distWordpress = () => {
-    // this.delete(`${_paths.output_wordpress_theme.js}**/*.js`);
-    // this.bareCopy(`${_paths.output_paths.js}scripts.min.js`, `${_paths.output_wordpress_theme.js}`);
+function deleteWordpressFiles(done) {
+    core.deleteFiles(_wordpress, '**/*.js');
+    done();
+}
+
+function copyWordpressFiles() {
+    return gulp.src(`${_destination}**/*.js`)
+        .on('end', () => logger.info(`Copying JavaScript files from ${_destination} to ${_wordpress}...`))
+        .pipe(gulp.dest(_wordpress))        
+        .on('end', () => logger.info('Finished deployment of JavaScript files.'))
+    ;
 }

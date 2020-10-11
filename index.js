@@ -3,13 +3,14 @@ gulp = require('gulp'),
 { logger } = require('./logger'),
 processorPhp = require('./processor-php'),
 processorImages = require('./processor-images'),
+processorJs = require('./processor-javascript'),
 watcher = require('./watcher').default
 ;
 
 exports.build = gulp.series(
     processorPhp.do,
-    processorImages.do/*,
-    require('./processor-styles').default,
+    processorImages.do,
+    processorJs.do/*,
     require('./processor-javascript').default*/
 );
 
