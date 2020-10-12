@@ -3,9 +3,7 @@ del = require('del').sync,
 errors = require('./errors.json'),
 { logger } = require('./logger'),
 _paths = require('./paths.json'),
-tools = require('./tools'),
-util = require('util'),
-wp_cli = require('./wp-cli')
+tools = require('./tools')
 ;
 
 function parseArguments() {
@@ -27,6 +25,9 @@ function parseArguments() {
 }
 
 function setPaths(paths) {
+    // Fix parameters that have unresolved variables
+    paths.parameters = tools.fixParameters(paths.parameters);
+
     /**
      * Slug
      */
@@ -102,24 +103,6 @@ function setPaths(paths) {
     logger.debug(`Paths: \n${JSON.stringify(paths)}`);
     return paths;
 }
-
-exports.getVersionFromPackage = (packagePath) => {
-    const packageJson = require(`${packagePath}package.json`);
-    return packageJson.version;
-}
-
-exports.getVersion = util.deprecate(() => {
-    const
-        template = wp_cli.getOption('w74_version', _paths.output_paths.wordpress),
-        now = new Date(),
-        timestamp = now.getFullYear()
-            + tools.addLeadingZeros(now.getMonth())
-            + tools.addLeadingZeros(now.getDate())
-            + tools.addLeadingZeros(now.getHours())
-            + tools.addLeadingZeros(now.getMinutes())
-            + tools.addLeadingZeros(now.getSeconds());
-    return template.replace('{timestamp}', timestamp);
-}, 'This function is deprecated since the single source of truth for the version number should be the one specified in the package.json file and not in the database');
 
 exports.getPaths = () => {
     const paths = setPaths(parseArguments());
