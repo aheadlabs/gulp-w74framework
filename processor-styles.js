@@ -6,7 +6,8 @@ gulp = require('gulp'),
 { logger } = require('./logger'),
 postcss = require('gulp-postcss'),
 replace = require('gulp-replace'),
-sass = require('gulp-sass')
+sass = require('gulp-sass'),
+tools = require('./tools')
 ;
 
 let 
@@ -27,7 +28,7 @@ function up(done) {
     _source = `${_paths.source_paths.css}*.scss`;
     _destination = `${_paths.output_paths.dist}`;
     _wordpress = `${_paths.output_wordpress_theme.dest}`;
-    _version = core.getVersionFromPackage(_paths.source_paths.root);
+    _version = tools.getPackageVersion(tools.getPackage(_paths.source_paths.root))
     logger.debug(`Theme version is ${_version}`);
     done();
 }
