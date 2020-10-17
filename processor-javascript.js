@@ -27,7 +27,7 @@ function up(done) {
         `${_paths.source_paths.js}**/*.js`
     ];
     _destination = `${_paths.output_paths.js}`;
-    _wordpress = `${_paths.output_wordpress_theme.js}`;
+    _wordpress = _paths.output_wordpress_theme.dest ? `${_paths.output_wordpress_theme.dest}` : null;
     done();
 }
 
