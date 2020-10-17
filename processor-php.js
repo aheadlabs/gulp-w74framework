@@ -20,7 +20,7 @@ function up(done) {
     _paths = core.getPaths();
     _source = `${_paths.source_paths.src}**/*.php`;
     _destination = `${_paths.output_paths.dist}`;
-    _wordpress = `${_paths.output_wordpress_theme.dest}`;
+    _wordpress = _paths.output_wordpress_theme.dest ? `${_paths.output_wordpress_theme.dest}` : null;
     done();
 }
 

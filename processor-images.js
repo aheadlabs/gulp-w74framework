@@ -32,8 +32,8 @@ function up(done) {
     ];
     _destination_root = `${_paths.output_paths.dist}`;
     _destination_assets = `${_paths.output_paths.images}`;
-    _wordpress_root = `${_paths.output_wordpress_theme.dest}`;
-    _wordpress_assets = `${_paths.output_wordpress_theme.images}`;
+    _wordpress_root = _paths.output_wordpress_theme.dest ? `${_paths.output_wordpress_theme.dest}` : null;
+    _wordpress_assets = _paths.output_wordpress_theme.images ? `${_paths.output_wordpress_theme.images}` : null;
     _onlyScreenshot = filter(['screenshot.png'], { restore: true });
     _onlyScreenshotWp = filter(['**/screenshot.png'], { restore: true });
     _allButScreenshot = filter(['**/*', '!**/screenshot.png']);
