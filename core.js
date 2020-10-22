@@ -53,6 +53,9 @@ function setPaths(paths) {
     // CSS path
     paths.source_paths.css = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.css}/`);
 
+    // Fonts path
+    paths.source_paths.fonts = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.fonts}/`);
+
     // Images path
     paths.source_paths.images = tools.fixDirectoryPath(`${paths.source_paths.src}/${paths.defaults.assets}/${paths.defaults.images}/`);
 
@@ -71,6 +74,9 @@ function setPaths(paths) {
 
     // CSS path
     paths.output_paths.css = tools.fixDirectoryPath(`${paths.output_paths.dist}/${paths.defaults.assets}/${paths.defaults.css}/`);
+
+    // Fonts path
+    paths.output_paths.fonts = tools.fixDirectoryPath(`${paths.output_paths.dist}/${paths.defaults.assets}/${paths.defaults.fonts}/`);
 
     // Images path
     paths.output_paths.images = tools.fixDirectoryPath(`${paths.output_paths.dist}/${paths.defaults.assets}/${paths.defaults.images}/`);
@@ -91,6 +97,9 @@ function setPaths(paths) {
 
         // CSS path
         paths.output_wordpress_theme.css = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.css}/`);
+
+        // Fonts path
+        paths.output_wordpress_theme.fonts = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.fonts}/`);
 
         // Images path
         paths.output_wordpress_theme.images = tools.fixDirectoryPath(`${paths.output_wordpress_theme.dest}/${paths.defaults.assets}/${paths.defaults.images}/`);
