@@ -18,7 +18,7 @@ function up(done) {
     logger.info('##### Fonts #####');
     logger.info('Warming up...');
     _paths = core.getPaths();
-    _source = `${_paths.source_paths.fonts}**/*.{ttf, otf, eot, woff, woff2, svg}`;
+    _source = `${_paths.source_paths.fonts}**/*.*`; //{ttf, otf, eot, woff, woff2, svg}
     _destination = `${_paths.output_paths.fonts}`;
     _wordpress = _paths.output_wordpress_theme.fonts ? `${_paths.output_wordpress_theme.fonts}` : null;
     done();
@@ -30,7 +30,7 @@ function down(done) {
 }
 
 function deleteDistFiles(done) {
-    core.deleteFiles(_destination, '**/*.{ttf, otf, eot, woff, woff2, svg}');
+    core.deleteFiles(_destination, '**/*.*'); //{ttf, otf, eot, woff, woff2, svg}
     done();
 }
 
@@ -43,13 +43,13 @@ function processDistFiles() {
 }
 
 function deleteWordpressFiles(done) {
-    if (_wordpress) core.deleteFiles(_wordpress, '**/*.{ttf, otf, eot, woff, woff2, svg}');
+    if (_wordpress) core.deleteFiles(_wordpress, '**/*.*'); //{ttf, otf, eot, woff, woff2, svg}
     done();
 }
 
 function copyWordpressFiles(done) {
     if (_wordpress) {
-        return gulp.src(`${_destination}**/*.{ttf, otf, eot, woff, woff2, svg}`)
+        return gulp.src(`${_destination}**/*.*`) //{ttf, otf, eot, woff, woff2, svg}
             .on('end', () => logger.info(`Copying fonts files from ${_destination} to ${_wordpress}...`))
             .pipe(gulp.dest(_wordpress))        
             .on('end', () => logger.info('Finished deployment of font files.'))

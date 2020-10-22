@@ -6,6 +6,7 @@ gulp = require('gulp'),
 processorPhp = require('./processor-php'),
 processorImages = require('./processor-images'),
 processorStyles = require('./processor-styles'),
+processorFonts = require('./processor-fonts'),
 processorJavascript = require('./processor-javascript')
 ;
 
@@ -55,6 +56,10 @@ exports.do = (done) => {
     gulp.watch(
         `${_paths.source_paths.css}*.*css`,
         {}, gulp.series(processorStyles.do, reload)
+    );
+    gulp.watch(
+        `${_paths.source_paths.fonts}*.*`, //{ttf, otf, eot, woff, woff2, svg}
+        {}, gulp.series(processorFonts.do, reload)
     );
     gulp.watch(
         `${_paths.source_paths.js}**/*.js`,
