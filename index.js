@@ -21,3 +21,5 @@ exports.watch = gulp.series(
 );
 
 // TODO We are not deleting files from destination that are not in the Vinyl source, so newer() is useless.
+// TODO Process font files (all extensions)
+// TODO Process .pot, .po and .mo files and move .mo files
