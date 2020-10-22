@@ -4,6 +4,7 @@ gulp = require('gulp'),
 processorPhp = require('./processor-php'),
 processorImages = require('./processor-images'),
 processorStyles = require('./processor-styles'),
+processorFonts = require('./processor-fonts'),
 processorJavascript = require('./processor-javascript'),
 watcher = require('./watcher')
 ;
@@ -12,6 +13,7 @@ exports.build = gulp.series(
     processorPhp.do,
     processorImages.do,
     processorStyles.do,
+    processorFonts.do,
     processorJavascript.do
 );
 
