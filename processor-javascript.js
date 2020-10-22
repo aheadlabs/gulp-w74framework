@@ -22,12 +22,12 @@ function up(done) {
     logger.info('Warming up...');
     _paths = core.getPaths();
     _source = [
-        `${_paths.source_paths.node_modules}bootstrap/dist/js/bootstrap.bundle.min.js`,
         `${_paths.source_paths.node_modules}jquery/dist/jquery.slim.min.js`,
+        `${_paths.source_paths.node_modules}bootstrap/dist/js/bootstrap.bundle.min.js`,
         `${_paths.source_paths.js}**/*.js`
     ];
     _destination = `${_paths.output_paths.js}`;
-    _wordpress = _paths.output_wordpress_theme.dest ? `${_paths.output_wordpress_theme.dest}` : null;
+    _wordpress = _paths.output_wordpress_theme.js ? `${_paths.output_wordpress_theme.js}` : null;
     done();
 }
 
