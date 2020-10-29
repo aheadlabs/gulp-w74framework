@@ -25,7 +25,7 @@ function up(done) {
     logger.info('##### STYLES #####');
     logger.info('Warming up...');
     _paths = core.getPaths();
-    _source = `${_paths.source_paths.css}*.scss`;
+    _source = `${_paths.source_paths.css}**/*.scss`;
     _destination = `${_paths.output_paths.dist}`;
     _wordpress = _paths.output_wordpress_theme.dest ? `${_paths.output_wordpress_theme.dest}` : null;
     _version = tools.getPackageVersion(tools.getPackage(_paths.source_paths.root))

@@ -54,7 +54,7 @@ exports.do = (done) => {
         {}, gulp.series(processorImages.do, reload)
     );
     gulp.watch(
-        `${_paths.source_paths.css}*.*css`,
+        `${_paths.source_paths.css}**/*.*css`,
         {}, gulp.series(processorStyles.do, reload)
     );
     gulp.watch(
