@@ -22,7 +22,7 @@ function up(done) {
     logger.info('Warming up...');
     _paths = core.getPaths();
     _source = [
-        `${_paths.source_paths.node_modules}jquery/dist/jquery.slim.min.js`,
+        `${_paths.source_paths.node_modules}jquery/dist/jquery.min.js`,
         `${_paths.source_paths.node_modules}bootstrap/dist/js/bootstrap.bundle.min.js`,
         `${_paths.source_paths.js}**/*.js`
     ];
