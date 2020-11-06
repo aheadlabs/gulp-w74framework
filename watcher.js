@@ -34,6 +34,7 @@ exports.do = (done) => {
                 location: true,
                 scroll: true
             },
+            https: true,
             injectChanges: false,
             proxy: _paths.parameters.dev_proxy,
             ui: {
