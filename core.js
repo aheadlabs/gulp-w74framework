@@ -11,12 +11,12 @@ function parseArguments() {
     const commandLineArguments = process.argv.filter(argument => argument.startsWith("-"));
 
     // Process each argument
-    const searchExpression = /-{0,2}([\w-]+)="*(.+[^"])/;
+    const searchExpression = /-{0,2}([\w-]+)(="*(.+[^"]))?/;
     commandLineArguments.forEach(argument => {
         const argumentData = argument.match(searchExpression);
-        if(argumentData.length !== 3) throw `${errors.parameter_syntax_not_valid} : ${argument}`;
+        if(argumentData.length !== 4) throw `${errors.parameter_syntax_not_valid} : ${argument}`;
         let _name = argumentData[1].replace(/-/g, '_');
-        let _value = tools.fixDirectoryPath(argumentData[2]);
+        let _value = argumentData[3] ? tools.fixDirectoryPath(argumentData[3]) : null;
         _paths.parameters[_name] = _value;
         logger.debug(`Parsed parameter with name \"${_name}\" and value \"${_value}\"`);
     });
