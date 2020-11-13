@@ -1,6 +1,6 @@
 {
   "name": "@aheadlabs/gulp-w74framework",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Gulp support for the W74 WordPress framework",
   "main": "index.js",
   "scripts": {
@@ -40,9 +40,11 @@
     "gulp-strip-debug": "^3.0.0",
     "gulp-uglify": "^3.0.2",
     "gulp-util": "^3.0.8",
+    "https": "^1.0.0",
     "jquery": "^3.5.1",
     "postcss-assets": "^5.0.0",
     "slash": "^3.0.0",
+    "valid-url": "^1.0.9",
     "winston": "^3.3.3"
   }
 }

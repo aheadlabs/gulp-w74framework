@@ -1,31 +1,66 @@
 const
 concat = require('gulp-concat'),
 core = require('./core'),
+fs = require('fs'),
 gulp = require('gulp'),
+https = require('https'),
 { logger } = require('./logger'),
 stripdebug = require('gulp-strip-debug'),
-uglify = require('gulp-uglify')
+uglify = require('gulp-uglify'),
+validUrl = require('valid-url')
 ;
 
-let 
-_paths,
-_source,
+let
 _destination,
+_gulpConfiguration,
+_paths,
+_source = [],
 _wordpress
 ;
 
 exports.deployToWordpress = gulp.series(deleteWordpressFiles, copyWordpressFiles);
 exports.do = gulp.series(up, deleteDistFiles, processDistFiles, this.deployToWordpress, down);
 
+function parsePath(path, _paths){
+    // If path is a URL, download it
+    if (validUrl.isWebUri(path)){
+        const url = new URL(path);
+        let filePath = `${_paths.source_paths.js}_${url.hostname}_${url.pathname.split("/").join("_")}${url.pathname.endsWith(".js") ? '': '.js'}`;
+        //let file = fs.createWriteStream(filePath);
+
+        let urlData = https.get(url, res => {
+            res.on('data', data => {
+                urlData += data;
+            });
+            res.on('end', () => {
+                fs.writeFileSync(filePath, urlData, 'utf8');
+            });
+        });
+
+        return filePath;
+    }
+
+    // If path is from node_modules, replace token by real path
+    if (path.indexOf('{node_modules}') >= 0){
+        return path.replace('{node_modules}', _paths.source_paths.node_modules);
+    }
+
+    return path;
+}
+
 function up(done) {
     logger.info('##### JAVASCRIPT #####');
     logger.info('Warming up...');
     _paths = core.getPaths();
-    _source = [
-        `${_paths.source_paths.node_modules}jquery/dist/jquery.min.js`,
-        `${_paths.source_paths.node_modules}bootstrap/dist/js/bootstrap.bundle.min.js`,
-        `${_paths.source_paths.js}**/*.js`
-    ];
+
+    // Add scripts
+    _gulpfileConfiguration = `${_paths.parameters.theme_path}/gulpfile.json`;
+    if(fs.existsSync(_gulpfileConfiguration)){
+        _gulpConfiguration = require(_gulpfileConfiguration);
+        _gulpConfiguration.scripts.forEach(script => _source.push(parsePath(script, _paths)));
+    }
+    _source.push(`${_paths.source_paths.js}**/*.js`);
+
     _destination = `${_paths.output_paths.js}`;
     _wordpress = _paths.output_wordpress_theme.js ? `${_paths.output_wordpress_theme.js}` : null;
     done();
