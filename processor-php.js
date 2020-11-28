@@ -18,7 +18,7 @@ function up(done) {
     logger.info('##### PHP #####');
     logger.info('Warming up...');
     _paths = core.getPaths();
-    _source = [`${_paths.source_paths.src}**/*.php`, `${_paths.source_paths.root}composer.json`];
+    _source = [`${_paths.source_paths.src}**/*.php`, `${_paths.source_paths.src}composer.json`];
     _destination = `${_paths.output_paths.dist}`;
     _wordpress = _paths.output_wordpress_theme.dest ? `${_paths.output_wordpress_theme.dest}` : null;
     done();
